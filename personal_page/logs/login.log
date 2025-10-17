@@ -1,0 +1,134 @@
+[2025-10-17 16:20:47,430] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:20:48,048] ERROR cabinet.auth: HTTP error during SOAP call
+Traceback (most recent call last):
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+        sock=sock,
+    ...<14 lines>...
+        assert_fingerprint=self.assert_fingerprint,
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connection.py", line 969, in _ssl_wrap_socket_and_match_hostname
+    ssl_sock = ssl_wrap_socket(
+        sock=sock,
+    ...<8 lines>...
+        tls_in_tls=tls_in_tls,
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 480, in ssl_wrap_socket
+    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 524, in _ssl_wrap_socket_impl
+    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 455, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1076, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\ssl.py", line 1372, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='insure.a-group.az', port=443): Max retries exceeded with url: /insureazSvc/AQroupMobileIntegrationSvc.asmx (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\xampp\htdocs\personal_page\personal_page\cabinet\services.py", line 106, in external_login
+    r = requests.post(
+        url,
+    ...<3 lines>...
+        verify=cfg.get('VERIFY_SSL', True),
+    )
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\xampp\htdocs\personal_page\personal_page\.venv\Lib\site-packages\requests\adapters.py", line 675, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='insure.a-group.az', port=443): Max retries exceeded with url: /insureazSvc/AQroupMobileIntegrationSvc.asmx (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)')))
+[2025-10-17 16:21:28,459] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:21:28,871] ERROR cabinet.auth: Non-200 from SOAP: 400
+[2025-10-17 16:21:49,830] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:21:50,224] ERROR cabinet.auth: Non-200 from SOAP: 400
+[2025-10-17 16:22:35,792] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:22:36,217] ERROR cabinet.auth: Non-200 from SOAP: 400
+[2025-10-17 16:22:39,128] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:22:39,937] ERROR cabinet.auth: Non-200 from SOAP: 400
+[2025-10-17 16:22:42,890] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:22:43,292] ERROR cabinet.auth: Non-200 from SOAP: 400
+[2025-10-17 16:26:21,688] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:26:22,261] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'invalid_inner_xml'}
+[2025-10-17 16:32:05,335] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:32:06,005] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:36:39,943] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:36:40,620] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:45:21,822] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:45:22,530] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:46:27,160] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:46:27,771] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:46:27,773] INFO cabinet.auth: OTP request to 994507506901
+[2025-10-17 16:46:28,333] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '3095', 'error': None}
+[2025-10-17 16:46:41,451] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:46:42,077] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:46:42,079] INFO cabinet.auth: OTP request to 994507506901
+[2025-10-17 16:46:42,593] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '3535', 'error': None}
+[2025-10-17 16:46:55,017] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 16:46:55,621] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 16:46:55,622] INFO cabinet.auth: OTP request to 994507506901
+[2025-10-17 16:46:56,111] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8401', 'error': None}
+[2025-10-17 17:09:54,255] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 17:09:54,993] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 17:09:54,995] INFO cabinet.auth: OTP request to 994507506901
+[2025-10-17 17:09:55,640] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '3385', 'error': None}
+[2025-10-17 17:15:08,493] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-10-17 17:15:09,119] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-10-17 17:15:09,121] INFO cabinet.auth: OTP request to 994507506901
+[2025-10-17 17:15:09,652] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4218', 'error': None}

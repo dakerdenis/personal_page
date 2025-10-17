@@ -1,0 +1,36 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Вход</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'cabinet/css/login.css' %}">
+</head>
+<body>
+  <div class="card">
+    <h1>Вход в личный кабинет</h1>
+
+    {% if messages %}
+      {% for m in messages %}
+        <div class="msg">{{ m }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" action="/login">
+      {% csrf_token %}
+      <label for="pinCode">PIN код</label>
+      <input value="27DRGHZ" id="pinCode" name="pinCode" autocomplete="off" required>
+
+      <label for="policyNumber">Номер полиса</label>
+      <input value="TLI2501123" id="policyNumber" name="policyNumber" autocomplete="off" required>
+
+      <label for="phoneNumber">Номер телефона</label>
+      <input value="994507506901" id="phoneNumber" name="phoneNumber" autocomplete="tel" required placeholder="994...">
+
+      <button type="submit">Войти</button>
+    </form>
+  </div>
+</body>
+</html>
