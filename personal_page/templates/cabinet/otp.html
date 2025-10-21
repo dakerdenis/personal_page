@@ -1,52 +1,88 @@
-<!doctype html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>Подтверждение OTP</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif; background:#f6f7f9; margin:0; padding:40px;}
-    .card{max-width:420px; margin:0 auto; background:#fff; border-radius:12px; padding:24px; box-shadow:0 6px 24px rgba(0,0,0,.08)}
-    h1{font-size:20px; margin:0 0 8px;}
-    .muted{color:#6b7280; font-size:14px; margin-bottom:12px}
-    label{display:block; font-size:14px; margin:12px 0 6px;}
-    input{width:100%; padding:10px 12px; border:1px solid #dcdde1; border-radius:8px; font-size:18px; letter-spacing:4px; text-align:center;}
-    button{width:100%; margin-top:16px; padding:12px; border:0; border-radius:10px; font-weight:600; cursor:pointer; background:#111827; color:#fff;}
-    .msg{margin:8px 0; color:#b91c1c; font-size:14px;}
-    .timer{font-weight:600;}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login A-Group — OTP</title>
+
+  <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'cabinet/css/login.css' %}">
+  <style>.msg{color:#b91c1c;margin-top:8px;font-size:14px}.is-invalid{border-color:#b91c1c!important}</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Подтверждение входа</h1>
-    <div class="muted">На номер {{ phone }} отправлен код. Введите его в течение <span class="timer" id="left">{{ remaining }}</span> сек.</div>
+  <div class="login__container">
+    <div class="login__container-form">
+      <form id="otpForm" action="/login" method="POST" class="form__container" autocomplete="off" novalidate>
+        {% csrf_token %}
 
-    {% if messages %}
-      {% for m in messages %}
-        <div class="msg">{{ m }}</div>
-      {% endfor %}
-    {% endif %}
+        <div class="form__desc form__desc-otp">
+          <p>OTP Verification</p>
+          <span>OTP göndərildi: {{ phone }}. <br> Zəhmət olmasa {{ remaining }} saniyə ərzində kodu daxil edin.</span>
+        </div>
 
-    <form method="post" action="/login" autocomplete="off">
-      {% csrf_token %}
-      <label for="otp_code">OTP код</label>
-      <input id="otp_code" name="otp_code" maxlength="6" inputmode="numeric" autofocus required>
-      <button type="submit">Подтвердить</button>
-    </form>
+        <div class="form__input__container">
+          <p class="form__input__desc">OTP Kodu:</p>
+          <input type="text" name="otp_code" id="otp_code" placeholder="Enter OTP |"
+                 required inputmode="numeric" maxlength="6" pattern="^\d{4,6}$" autofocus>
+        </div>
+
+        <div class="form__input__button">
+          <button type="submit">Daxil olmaq</button>
+        </div>
+
+        {% if messages %}
+          {% for m in messages %}
+            <div class="msg">{{ m }}</div>
+          {% endfor %}
+        {% endif %}
+        <div id="clientErrors" class="msg" aria-live="polite"></div>
+
+        <!-- серверный таймер -->
+        <input type="hidden" id="remaining_server" value="{{ remaining|default:0 }}">
+      </form>
+    </div>
+
+    <div class="login__logo">
+      <img src="https://a-group.az/cabinet/style/assets/company_logo.svg" alt="A-Group">
+    </div>
+
+    <div class="login__container-image">
+      <img src="https://a-group.az/storage/uploaded_files/WZ0D/login.jpg" alt="">
+    </div>
   </div>
 
   <script>
-    (function(){
-      var left = {{ remaining|default:0 }};
-      var el = document.getElementById('left');
-      var iv = setInterval(function(){
+    (function () {
+      const form = document.getElementById('otpForm');
+      const otp = document.getElementById('otp_code');
+      const clientErrors = document.getElementById('clientErrors');
+
+      // allow only digits, max 6
+      otp.addEventListener('input', () => {
+        otp.value = otp.value.replace(/\D+/g, '').slice(0, 6);
+        otp.classList.remove('is-invalid');
+        if (!document.querySelector('.is-invalid')) clientErrors.textContent = '';
+      });
+
+      form.addEventListener('submit', (e) => {
+        const v = otp.value.trim();
+        if (!/^\d{4,6}$/.test(v)) {
+          e.preventDefault();
+          otp.classList.add('is-invalid');
+          clientErrors.textContent = 'OTP 4–6 rəqəmdən ibarət olmalıdır.';
+        }
+      });
+
+      // countdown + redirect
+      var left = parseInt(document.getElementById('remaining_server').value || '0', 10);
+      var tick = setInterval(function () {
         left--;
         if (left <= 0) {
-          clearInterval(iv);
+          clearInterval(tick);
           window.location.href = "/login";
-          return;
         }
-        el.textContent = left;
       }, 1000);
     })();
   </script>

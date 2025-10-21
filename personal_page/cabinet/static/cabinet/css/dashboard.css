@@ -1,0 +1,83 @@
+
+    .personal__wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .perosnal__account__info {
+        width: 320px;
+        background: #0b1324;
+        color: #fff;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        align-self: flex-start;
+        min-height: 100vh;
+    }
+
+    .personal__account_image img {
+        max-width: 180px;
+        height: auto;
+        display: block;
+    }
+
+    .personal__account__info-additional a {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #e5e7eb;
+        margin: 6px 0;
+        background: transparent
+    }
+
+    .personal__account__info-additional a.active {
+        background: #111827;
+        color: #fff;
+    }
+
+    .logout-btn {
+        margin-top: auto;
+        display: block;
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 8px;
+        background: #ef4444;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .whatsapp {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+        color: #22c55e;
+        text-decoration: none;
+    }
+
+    .personal__account__data-wrapper {
+        flex: 1;
+        padding: 32px;
+        min-width: 0;
+    }
+
+    .personal__account-desc {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }

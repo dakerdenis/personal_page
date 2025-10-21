@@ -1,26 +1,156 @@
+{% load static %}
 <!doctype html>
-<html lang="ru">
+<html lang="az">
 <head>
   <meta charset="utf-8">
-  <title>Личный кабинет</title>
+  <title>A-Group Şəxsi kabinet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Подключай свои стили -->
+  <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'cabinet/css/dashboard.css' %}">
+
+  <!-- Базовая раскладка (можешь перенести в свой CSS) -->
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif; background:#f6f7f9; margin:0; padding:40px;}
-    .wrap{max-width:800px; margin:0 auto;}
-    .card{background:#fff; border-radius:12px; padding:24px; box-shadow:0 6px 24px rgba(0,0,0,.08)}
-    .row{display:flex; justify-content:space-between; align-items:center}
-    a.btn{display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; background:#111827; color:#fff;}
+    html, body {height:100%;}
+    body {margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans',sans-serif; background:#f6f7f9;}
+    .personal__wrapper{display:flex; min-height:100vh;}
+    .perosnal__account__info{width:320px; background:#0b1324; color:#fff; padding:24px; display:flex; flex-direction:column; gap:16px; position:sticky; top:0; align-self:flex-start; min-height:100vh;}
+    .personal__account_image img{max-width:180px; height:auto; display:block;}
+    .personal__account__info-additional a{display:block; padding:10px 12px; border-radius:8px; text-decoration:none; color:#e5e7eb; margin:6px 0; background:transparent}
+    .personal__account__info-additional a.active{background:#111827; color:#fff;}
+    .logout-btn{margin-top:auto; display:block; width:100%; padding:10px 14px; border-radius:8px; background:#ef4444; color:#fff; text-align:center; text-decoration:none;}
+    .whatsapp{display:flex; align-items:center; gap:8px; margin-top:8px; color:#22c55e; text-decoration:none;}
+    .personal__account__data-wrapper{flex:1; padding:32px; min-width:0;}
+    .personal__account-desc{background:#fff; border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 6px 24px rgba(0,0,0,.06);}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="row">
-        <h1>Здравствуйте, {{ name }} {{ surname }}</h1>
-        <a class="btn" href="/logout">Выйти</a>
+
+  <div class="personal__wrapper">
+
+    <!-- LEFT: sidebar -->
+    <aside class="perosnal__account__info">
+      <div class="personal__account_image">
+        <img src="https://a-group.az/storage/uploaded_files/Biy7/company_logo.png" alt="A-Group">
       </div>
-      <p>Личный кабинет: всё работает.</p>
-    </div>
+
+      <h1 style="font-size:18px; line-height:1.35; margin:0;">
+        A-Qroup sığorta şirkəti <br> şəxsi kabinet
+      </h1>
+
+      <div class="personal__account__info-additional">
+        <a href="#" class="tab-link active" data-target="welcome">Giriş</a>
+        <a href="#" class="tab-link" data-target="policies">Şəhadətnamələr</a>
+        <a href="#" class="tab-link" data-target="doctors">Həkimlər siyahısı</a>
+        <a href="#" class="tab-link" data-target="complaints">Mənim müraciətlərim (Tibbi)</a>
+        <a href="#" class="tab-link" data-target="complaints_not_medical">Mənim müraciətlərim (Qeyri-Tibbi)</a>
+        <a href="#" class="tab-link" data-target="refund">Geri ödəniş üçün müraciət</a>
+        <!-- <a href="https://a-group.az/payments/" target="_blank" class="tab-link">Onlayn Ödəniş</a> -->
+      </div>
+
+      <a class="logout-btn" href="/logout">Çıxış</a>
+      <a target="_blank" class="whatsapp"
+         href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
+        <span style="font-size:20px;">🟢</span>
+        <p style="margin:0;">Dərman çatdırılması</p>
+      </a>
+    </aside>
+
+    <!-- RIGHT: content -->
+    <main class="personal__account__data-wrapper">
+      <div class="personal__account-desc">
+        Hörmətli {{ name }} {{ surname }}, <br>
+        şəxsi kabinetə xoş gəlmisiniz!
+      </div>
+
+
+      <!-- Tab sections -->
+      <section id="welcome" class="tab-content active">
+        <!-- стартовый блок/дашборд -->
+        <div class="card" style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 6px 24px rgba(0,0,0,.06);">
+          <p style="margin:0;">Buradan bölmələr üzrə məlumatlara keçid edə bilərsiniz.</p>
+        </div>
+      </section>
+
+      <section id="policies" class="tab-content">
+        <!-- Şəhadətnamələr -->
+      </section>
+
+      <!-- Policies info Auto -->
+      <section id="policies__additional-auto" class="tab-content">
+      </section>
+
+      <!-- Policies info Medical -->
+      <section id="policies__additional-medical" class="tab-content">
+      </section>
+
+      <section id="doctors" class="tab-content">
+        <!-- Specializations will be rendered here -->
+      </section>
+
+      <section id="specialists" class="tab-content">
+        <!-- Specialists will be rendered here -->
+      </section>
+
+      <section id="doctor-details" class="tab-content">
+        <!-- Doctor details will be rendered here -->
+      </section>
+
+      <section id="complaints" class="tab-content">
+      </section>
+
+      <section id="complaints_not_medical" class="tab-content">
+      </section>
+
+      <section id="refund" class="tab-content">
+      </section>
+
+      <!-- Popups (скрытые контейнеры) -->
+      <div id="policy-popup" class="popup" style="display:none;">
+        <div id="policy-popup-content" class="popup-content"></div>
+      </div>
+
+      <div id="doctor-popup" class="popup" style="display:none;">
+        <div class="doctor-popup__wrapper">
+          <button id="close-doctor-popup" class="popup-close">Bağlamaq</button>
+          <div id="doctor-popup-content" class="popup-content2"></div>
+        </div>
+      </div>
+
+    </main>
   </div>
+
+  <!-- Лёгкая логика табов -->
+  <script>
+    (function () {
+      const links = document.querySelectorAll('.tab-link');
+      const sections = document.querySelectorAll('.tab-content');
+
+      function activate(targetId) {
+        sections.forEach(s => s.classList.toggle('active', s.id === targetId));
+        links.forEach(a => a.classList.toggle('active', a.dataset.target === targetId));
+      }
+
+      links.forEach(a => {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          const id = this.dataset.target;
+          if (!id) return;
+          activate(id);
+          // обновляем hash (по желанию)
+          history.replaceState(null, '', '#' + id);
+        });
+      });
+
+      // если пришли с hash — активируем соответствующий таб
+      const initial = (location.hash || '#welcome').replace('#','');
+      if (document.getElementById(initial)) {
+        activate(initial);
+      }
+    })();
+  </script>
 </body>
 </html>

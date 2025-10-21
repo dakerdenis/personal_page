@@ -1,36 +1,117 @@
 {% load static %}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>Вход</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login A-Group</title>
   <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
   <link rel="stylesheet" href="{% static 'cabinet/css/login.css' %}">
 </head>
 <body>
-  <div class="card">
-    <h1>Вход в личный кабинет</h1>
+  <div class="login__container">
+    <div class="login__container-form">
+      <form id="loginForm" action="/login" method="POST" class="form__container" autocomplete="off" novalidate>
+        {% csrf_token %}
+        <div class="form__desc">
+          <p>Xoş gəldiniz!</p>
+          <span>A-Qroup şəxsi kabineti</span>
+        </div>
 
-    {% if messages %}
-      {% for m in messages %}
-        <div class="msg">{{ m }}</div>
-      {% endfor %}
-    {% endif %}
+        <div class="form__input__container">
+          <p class="form__input__desc">Fin kodu:</p>
+          <input placeholder="27DRGHZ" value="27DRGHZ" type="text" name="pinCode" id="pinCode"
+                 required minlength="7" maxlength="7">
+        </div>
 
-    <form method="post" action="/login">
-      {% csrf_token %}
-      <label for="pinCode">PIN код</label>
-      <input value="27DRGHZ" id="pinCode" name="pinCode" autocomplete="off" required>
+        <div class="form__input__container">
+          <p class="form__input__desc">Şəhədətnamə nömrəsi:</p>
+          <input placeholder="TLI2501123" value="TLI2501123" type="text" name="policyNumber" id="policyNumber" required>
+        </div>
 
-      <label for="policyNumber">Номер полиса</label>
-      <input value="TLI2501123" id="policyNumber" name="policyNumber" autocomplete="off" required>
+        <div class="form__input__container">
+          <p class="form__input__desc">Mobil nömrə:</p>
+          <input placeholder="994507506901" type="text" name="phoneNumber" id="phoneNumber"
+                 required inputmode="numeric" pattern="^994\d{9}$" maxlength="12">
+        </div>
 
-      <label for="phoneNumber">Номер телефона</label>
-      <input value="994507506901" id="phoneNumber" name="phoneNumber" autocomplete="tel" required placeholder="994...">
+        <div class="form__input__button">
+          <button type="submit">Daxil olmaq</button>
+        </div>
 
-      <button type="submit">Войти</button>
-    </form>
+        {% if messages %}
+          {% for m in messages %}
+            <div class="msg">{{ m }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <div id="clientErrors" class="msg" aria-live="polite"></div>
+      </form>
+    </div>
+
+    <div class="login__logo">
+      <a href="https://a-group.az/">
+        <img src="https://a-group.az/cabinet/style/assets/company_logo.svg" alt="A-Group">
+      </a>
+    </div>
+
+    <div class="login__container-image">
+      <img src="https://a-group.az/storage/uploaded_files/WZ0D/login.jpg" alt="">
+    </div>
   </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('loginForm');
+      const pin = document.getElementById('pinCode');
+      const phone = document.getElementById('phoneNumber');
+      const clientErrors = document.getElementById('clientErrors');
+      // helper: показать ошибку
+      function setError(el, msg) {
+        el.classList.add('is-invalid');
+        clientErrors.textContent = msg;
+      }
+      function clearError(el) {
+        el.classList.remove('is-invalid');
+        if (!document.querySelector('.is-invalid')) clientErrors.textContent = '';
+      }
+
+      // phone: оставляем только цифры, режем до 12, без +
+      phone.addEventListener('input', () => {
+        const digits = phone.value.replace(/\D+/g, '').slice(0, 12);
+        phone.value = digits;
+        clearError(phone);
+      });
+
+      // pin: ровно 7 символов
+      pin.addEventListener('input', () => {
+        if (pin.value.length > 7) pin.value = pin.value.slice(0, 7);
+        clearError(pin);
+      });
+
+      form.addEventListener('submit', (e) => {
+        let ok = true;
+
+        // Проверка pinCode: ровно 7 символов (любых)
+        if (pin.value.trim().length !== 7) {
+          setError(pin, 'PIN kodu 7 simvoldan ibarət olmalıdır.');
+          ok = false;
+        } else {
+          clearError(pin);
+        }
+
+        // Проверка phone: строго 12 цифр, начинается с 994
+        const phoneVal = phone.value.trim();
+        if (!/^994\d{9}$/.test(phoneVal)) {
+          setError(phone, 'Mobil nömrə formatı: 994XXXXXXXXX (12 rəqəm).');
+          ok = false;
+        } else {
+          clearError(phone);
+        }
+
+        if (!ok) e.preventDefault();
+      });
+    })();
+  </script>
 </body>
 </html>
