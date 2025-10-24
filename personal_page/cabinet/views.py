@@ -6,6 +6,14 @@ from django.http import HttpRequest
 from .services import external_login
 from .otp_service import create_otp_and_send_sms
 
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET, require_POST
+from .doctor_service import (
+    get_specialities,
+    get_doctors_by_speciality,
+    get_doctor_career,   # ← ЭТОГО не хватало
+)
+
 OTP_TTL_SECONDS = 60
 OTP_MAX_ATTEMPTS = 3
 
@@ -141,3 +149,121 @@ def _reset_session_to_login(request: HttpRequest):
     for k in ['otp_code', 'otp_pending', 'otp_attempts', 'otp_expires_at',
               'pinCode', 'phoneNumber', 'name', 'surname', 'loggedin']:
         request.session.pop(k, None)
+
+
+
+
+def _guard(request):
+    if not request.session.get('loggedin'):
+        return False
+    return True
+
+def _ctx(request, active):
+    return {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": active,
+    }
+
+def welcome(request: HttpRequest):
+    if not _guard(request): return redirect('login')
+    return render(request, 'cabinet/welcome.html', _ctx(request, 'welcome'))
+
+def policies(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    return render(request, 'cabinet/policies.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "policies",
+    })
+
+@require_GET
+def api_policies(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+    pin = request.session.get('pinCode', '')
+    if not pin:
+        return JsonResponse({"error": "no_pin_in_session"}, status=400)
+    result = get_customer_policies(pin)
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+@require_POST
+def api_policy_info(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+    policy_number = (request.POST.get('policyNumber') or '').strip()
+    if not policy_number:
+        return JsonResponse({"error": "policy_number_required"}, status=400)
+    result = get_policy_informations(policy_number)
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+def doctors(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    return render(request, 'cabinet/doctors.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "doctors",
+    })
+
+@require_GET
+def api_specialities(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+    result = get_specialities()
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+def doctors_by_speciality(request: HttpRequest, speciality_id: str):
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    return render(request, 'cabinet/doctors_speciality.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "doctors",
+        "speciality_id": speciality_id,
+    })
+
+@require_GET
+def api_doctors_by_speciality(request: HttpRequest, speciality_id: str):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+    result = get_doctors_by_speciality(speciality_id)
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+def doctor_detail(request: HttpRequest, speciality_id: str, doctor_id: str):
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    return render(request, 'cabinet/doctor_detail.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "doctors",
+        "speciality_id": speciality_id,
+        "doctor_id": doctor_id,
+    })
+
+
+@require_GET
+def api_doctor_career(request: HttpRequest, doctor_id: str):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"ok": False, "error": "unauthorized"}, status=401)
+    try:
+        result = get_doctor_career(doctor_id)
+    except Exception as e:
+        # не даём упасть до HTML-500
+        return JsonResponse({"ok": False, "error": f"internal_error: {e}"}, status=500)
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+
+
+def complaints(request: HttpRequest):
+    if not _guard(request): return redirect('login')
+    return render(request, 'cabinet/complaints.html', _ctx(request, 'complaints'))
+
+def complaints_not_medical(request: HttpRequest):
+    if not _guard(request): return redirect('login')
+    return render(request, 'cabinet/complaints_not_medical.html', _ctx(request, 'complaints_not_medical'))
+
+def refund(request: HttpRequest):
+    if not _guard(request): return redirect('login')
+    return render(request, 'cabinet/refund.html', _ctx(request, 'refund'))

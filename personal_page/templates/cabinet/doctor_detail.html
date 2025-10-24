@@ -1,0 +1,111 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Həkim — {{ doctor_id }}{% endblock %}
+
+{% block head_extra %}
+<style>
+  .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .back{padding:8px 12px;border-radius:10px;background:#111827;color:#fff;text-decoration:none}
+  .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+  .row{display:flex;gap:16px;align-items:center}
+  .photo{width:96px;height:96px;border-radius:12px;object-fit:cover;background:#f3f4f6}
+  .title{margin:0;font-weight:700;font-size:18px}
+  .muted{color:#6b7280}
+  .list{margin-top:16px;display:grid;gap:10px}
+  .item{border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+  .item p{margin:2px 0}
+  .msg-error{color:#b91c1c;margin:8px 0}
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="hdr">
+    <a class="back" href="{% url 'cabinet_doctors_by_speciality' speciality_id=speciality_id %}">⬅ Geri</a>
+    <h2 style="margin:0">Həkim: {{ doctor_id }}</h2>
+  </div>
+
+  <div id="err" class="msg-error" style="display:none;"></div>
+
+  <div class="card">
+    <div class="row">
+      <img id="photo" class="photo" alt="">
+      <div>
+        <p id="docName" class="title">—</p>
+        <p id="docPlace" class="muted">İş yeri: —</p>
+        <p class="muted">ID: {{ doctor_id }}</p>
+      </div>
+    </div>
+
+    <div class="list" id="career">
+      <!-- записи карьеры -->
+    </div>
+  </div>
+{% endblock %}
+
+{% block body_scripts %}
+<script>
+(function(){
+  const doctorId = "{{ doctor_id|escapejs }}";
+  const specId   = "{{ speciality_id|escapejs }}";
+  const err      = document.getElementById('err');
+  const photo    = document.getElementById('photo');
+  const nameEl   = document.getElementById('docName');
+  const placeEl  = document.getElementById('docPlace');
+  const wrap     = document.getElementById('career');
+
+  // 1) подтянем карточку врача из списка по специализации
+  fetch("{% url 'api_doctors_by_speciality' speciality_id=speciality_id %}")
+    .then(r => r.json())
+    .then(js => {
+      if (js && js.ok && Array.isArray(js.doctors)) {
+        const d = js.doctors.find(x => String(x.CUSTOMER_ID) === String(doctorId));
+        if (d) {
+          if ((d.NAME || '').trim()) nameEl.textContent = d.NAME.trim();
+          if ((d.WORKPLACE_NAME || '').trim()) placeEl.textContent = 'İş yeri: ' + d.WORKPLACE_NAME.trim();
+          if ((d.FILE_CONTENT || '').trim()) photo.src = "data:image/jpeg;base64," + d.FILE_CONTENT.trim();
+        }
+      }
+    })
+    .catch(()=>{ /* молча, это не блокер */ });
+
+  // 2) загрузим карьеры
+  fetch("{% url 'api_doctor_career' doctor_id=doctor_id %}")
+    .then(r => r.json())
+    .then(json => {
+      if (!json.ok) throw new Error(json.error || 'Xəta');
+      const arr = Array.isArray(json.career) ? json.career : [];
+      if (!arr.length) {
+        wrap.innerHTML = '<div class="item"><p>Məlumat tapılmadı.</p></div>';
+        return;
+      }
+
+      // если из карьеры можно что-то дополнить — аккуратно дополним
+      const first = arr[0] || {};
+      if ((!nameEl.textContent || nameEl.textContent === '—') && first.NAME) nameEl.textContent = first.NAME;
+      if ((placeEl.textContent || '').endsWith('—') && first.WORKPLACE_NAME) placeEl.textContent = 'İş yeri: ' + first.WORKPLACE_NAME;
+      // фото в карьерах обычно нет, но на всякий случай
+      if (!photo.src && first.FILE_CONTENT) photo.src = "data:image/jpeg;base64," + first.FILE_CONTENT;
+
+      wrap.innerHTML = arr.map(c => {
+        const sp = c.SPECIALITY_AZ || c.SPECIALITY || '';
+        const ent = c.ENTERPRISE_AZ || c.ENTERPRISE || '';
+        const plc = c.PLACE_AZ || c.PLACE || '';
+        const sY = (c.START_YEAR && c.START_YEAR !== '0') ? c.START_YEAR : '';
+        const eY = (c.END_YEAR && c.END_YEAR !== '0') ? c.END_YEAR : '';
+        return `
+          <div class="item">
+            ${sp ? `<p><strong>${sp}</strong></p>` : ``}
+            ${ent ? `<p>${ent}</p>` : ``}
+            ${plc ? `<p>${plc}</p>` : ``}
+            ${(sY||eY) ? `<p class="muted">${sY ? ('Başlama ili: '+sY) : ''} ${eY ? (' • Bitmə ili: '+eY) : ''}</p>` : ``}
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(e => {
+      err.style.display = 'block';
+      err.textContent = 'Məlumat yüklənmədi: ' + (e.message || '');
+    });
+})();
+</script>
+
+{% endblock %}

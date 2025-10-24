@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}A-Group Şəxsi kabinet{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'cabinet/css/dashboard.css' %}">
+  {% block head_extra %}{% endblock %}
+
+</head>
+<body>
+  <div class="personal__wrapper">
+    <!-- LEFT: sidebar -->
+    <aside class="perosnal__account__info">
+      <div class="personal__account_image">
+        <img src="https://a-group.az/storage/uploaded_files/Biy7/company_logo.png" alt="A-Group">
+      </div>
+
+      <h1 style="font-size:18px;line-height:1.35;margin:0;">
+        A-Qroup sığorta şirkəti <br> şəxsi kabinet
+      </h1>
+
+      <div class="personal__account__info-additional">
+        <a class="{% if active == 'welcome' %}active{% endif %}" href="{% url 'cabinet_welcome' %}">Giriş</a>
+        <a class="{% if active == 'policies' %}active{% endif %}" href="{% url 'cabinet_policies' %}">Şəhadətnamələr</a>
+        <a class="{% if active == 'doctors' %}active{% endif %}" href="{% url 'cabinet_doctors' %}">Həkimlər siyahısı</a>
+        <a class="{% if active == 'complaints' %}active{% endif %}" href="{% url 'cabinet_complaints' %}">Mənim müraciətlərim (Tibbi)</a>
+        <a class="{% if active == 'complaints_not_medical' %}active{% endif %}" href="{% url 'cabinet_complaints_not_medical' %}">Mənim müraciətlərim (Qeyri-Tibbi)</a>
+        <a class="{% if active == 'refund' %}active{% endif %}" href="{% url 'cabinet_refund' %}">Geri ödəniş üçün müraciət</a>
+      </div>
+
+      <a class="logout-btn" href="/logout">Çıxış</a>
+      <a target="_blank" class="whatsapp" href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
+        <span style="font-size:20px;">🟢</span><p style="margin:0;">Dərman çatdırılması</p>
+      </a>
+    </aside>
+
+    <!-- RIGHT: content -->
+    <main class="personal__account__data-wrapper">
+      <div class="personal__account-desc">
+        Hörmətli {{ name }} {{ surname }}, <br> şəxsi kabinetə xoş gəlmisiniz!
+      </div>
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block body_scripts %}{% endblock %}
+</body>
+</html>

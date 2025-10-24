@@ -1,0 +1,160 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Həkimlər — A-Group{% endblock %}
+
+{% block head_extra %}
+<style>
+  .doctors_desc {
+    font-weight: 700;
+    margin: 0 0 12px
+  }
+
+  .speciality_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px
+  }
+
+  .doctor_card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    transition: transform .08s ease
+  }
+
+  .doctor_card:hover {
+    transform: translateY(-2px)
+  }
+
+  .doctor_card img {
+    width: 36px;
+    height: 36px
+  }
+
+  .muted {
+    color: #6b7280
+  }
+
+  .msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+  }
+
+  .search_row {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 12px
+  }
+
+  .search_row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #dcdde1;
+    border-radius: 10px
+  }
+
+  .search_row button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #111827;
+    color: #fff;
+    cursor: pointer
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="doctors">
+  <h2 class="doctors_desc">Həkimlər</h2>
+
+  <div class="search_row">
+    <input id="q" type="text" placeholder="İxtisas üzrə axtarış...">
+    <button id="clear">Təmizlə</button>
+  </div>
+
+  <div id="err" class="msg-error" style="display:none;"></div>
+  <div id="empty" class="muted" style="display:none;">Məlumat tapılmadı</div>
+  <div id="list" class="speciality_grid"></div>
+</section>
+
+<!-- зарезервируем контейнер под будущие детали -->
+<div id="doctor-popup" class="popup" style="display:none;"></div>
+{% endblock %}
+
+{% block body_scripts %}
+<script>
+  (function () {
+    const list = document.getElementById('list');
+    const errBox = document.getElementById('err');
+    const empty = document.getElementById('empty');
+    const q = document.getElementById('q');
+    const clear = document.getElementById('clear');
+
+    let raw = [];   // исходный список SPECIALITIES
+    let view = [];  // отфильтрованный
+
+    function card(item) {
+      const id = item.SPECIALITY_ID || '';
+      const name = item.SPECIALITY_NAME || '';
+      return `
+      <div class="doctor_card" data-id="${id}">
+        <img src="https://a-group.az/assets/images/healthicons_doctor-male-outline.svg" alt="">
+        <div>
+          <div style="font-weight:600">${name}</div>
+          <div class="muted">ID: ${id}</div>
+        </div>
+      </div>
+    `;
+    }
+
+    function render(items) {
+      if (!items || !items.length) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      list.innerHTML = items.map(card).join('');
+      list.querySelectorAll('.doctor_card').forEach(el => {
+        el.addEventListener('click', () => {
+          const specialityId = el.getAttribute('data-id');
+          window.location.href = `/doctors/${encodeURIComponent(specialityId)}/`;
+        });
+      });
+
+    }
+
+    function applyFilter() {
+      const term = (q.value || '').trim().toLowerCase();
+      if (!term) {
+        view = raw.slice();
+      } else {
+        view = raw.filter(it => (it.SPECIALITY_NAME || '').toLowerCase().includes(term));
+      }
+      render(view);
+    }
+
+    q.addEventListener('input', applyFilter);
+    clear.addEventListener('click', () => { q.value = ''; applyFilter(); });
+
+    // загрузка
+    fetch('{% url "api_specialities" %}')
+      .then(r => r.json())
+      .then(json => {
+        if (!json.ok) throw new Error(json.error || 'Xəta');
+        raw = Array.isArray(json.specialities) ? json.specialities : [];
+        applyFilter();
+      })
+      .catch(err => {
+        errBox.style.display = 'block';
+        errBox.textContent = 'Məlumat yüklənmədi: ' + (err.message || '');
+      });
+
+  })();
+</script>
+{% endblock %}

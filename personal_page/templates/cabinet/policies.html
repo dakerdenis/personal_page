@@ -1,0 +1,201 @@
+{% extends "cabinet/base.html" %}
+{% block title %}Şəhadətnamələr — A-Group{% endblock %}
+
+{% block head_extra %}
+<style>
+  .polis__nam-desc{font-weight:700;margin:0 0 10px}
+  .polis_single_element{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.06);margin-bottom:12px}
+  .policy-details-button{padding:8px 12px;border-radius:8px;border:0;background:#111827;color:#fff;cursor:pointer}
+  .msg-error{color:#b91c1c;margin:8px 0}
+  .popup{position:fixed;inset:0;display:none;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:16px}
+  .popup-content{background:#fff;border-radius:12px;max-width:720px;width:100%;padding:20px}
+  #preloader{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(255,255,255,.6)}
+  .loader{width:40px;height:40px;border-radius:50%;border:4px solid #111827;border-top-color:transparent;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+{% endblock %}
+
+{% block content %}
+  <section id="policies_wrap">
+    <h3 class="polis__nam-desc">Polislər:</h3>
+    <div id="policies" class="msg-error" style="display:none;"></div>
+    <ul id="policies_list" style="list-style:none;padding:0;margin:0;"></ul>
+  </section>
+
+  <!-- Popup + preloader -->
+  <div id="policy-popup" class="popup">
+    <div id="policy-popup-content" class="popup-content"></div>
+  </div>
+  <div id="preloader" class="preloader"><div class="loader"></div></div>
+{% endblock %}
+
+{% block body_scripts %}
+<script>
+(function(){
+  const policiesList = document.getElementById('policies_list');
+  const policiesErr  = document.getElementById('policies');
+  const popup = document.getElementById('policy-popup');
+  const popupContent = document.getElementById('policy-popup-content');
+  const preloader = document.getElementById('preloader');
+
+  const insuranceDesc = {
+    AATPL:'Avtomobilin İcbari Sığortası', AS:'Avtomobilin Kasko Sığortası', VMI:'Avtomobilin Kasko Sığortası',
+    'AS-A47-GD':'Avtomobilin Kasko Sığortası','AS-FQ':'Avtomobilin Kasko Sığortası','AS-F':'Avtomobilin Kasko Sığortası','AS-H':'Avtomobilin Kasko Sığortası','REVAS':'Avtomobilin Kasko Sığortası',
+    EE:'Elektron cihazların sığortası', DETPL:'Əmlak İstismarın İcbari Sığortası', DE:'Əmlakın İcbari Sığortası',
+    VHI:'Əmlakın könüllü sığortası','VPI-FL':'Əmlakın könüllü sığortası','VPI-F':'Əmlakın könüllü sığortası','VPI-H':'Əmlakın könüllü sığortası',VPI:'Əmlakın könüllü sığortası','VPI-HN':'Əmlakın könüllü sığortası','VPI-FN':'Əmlakın könüllü sığortası',REVPI:'Əmlakın könüllü sığortası',
+    CPA:'Fərdi qəza sığortası', PA:'Fərdi qəza sığortası', CAR:'İnşaat risklərin sığortası',
+    EL:'İşəgötürənin məsuliyyətinin sığortası', ELN:'İşəgötürənin məsuliyyətinin sığortası',
+    TPL:'Məsuliyyət sığortası', TPLN:'Məsuliyyət sığortası',
+    CMMI:'Peşə Məsuliyyətinin sığortası', PI:'Peşə Məsuliyyətinin sığortası', CDOL:'Peşə Məsuliyyətinin sığortası',
+    CPM:'Podratçının maşın və avadanlığın sığortası',
+    TI:'Səyahət sığortası',
+    'VPI-R':'Təkərlərin sığortası',
+    LI:'Tibbi Sığorta', LE:'Tibbi Sığorta','ONK-A47':'Tibbi Sığorta', ONK:'Tibbi Sığorta', TTU:'Tibbi Sığorta','LE-D':'Tibbi Sığorta',
+    YK:'Yaşıl Kart','YS-OC':'Yük sığortası', YS:'Yük sığortası', YSN:'Yük sığortası'
+  };
+  const statusDesc = {B:'Bitdi', D:'Davam Edir', E:'Sonlandırıldı'};
+  const medicalCodes = ['LI','LE','ONK-A47','ONK','TTU','LE-D','YK','YS-OC','YS','YSN'];
+  const carCodes = ['AATPL','AS','VMI','AS-A47-GD','AS-FQ','AS-F','AS-H','REVAS'];
+
+  function getCookie(name){
+    const m = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+    return m ? m.pop() : '';
+  }
+
+  function row(policy){
+    const title = insuranceDesc[policy.INSURANCE_CODE] || policy.INSURANCE_CODE || '';
+    const status = statusDesc[policy.STATUS] || policy.STATUS || '';
+    const endDate = policy.INSURANCE_END_DATE ? (policy.INSURANCE_END_DATE.split('T')[0]) : 'N/A';
+    return `
+      <li class="polis_single_element" style="justify-content:space-between;display:flex;align-items:center;">
+        <div>
+          <p class="polis__single__name">${title}</p>
+          <div class="polis_line"></div>
+          <p class="policy_font policy_number">Şəhədətnamə nömrəsi: <span>${policy.POLICY_NUMBER || ''}</span></p>
+          <p class="policy_font status_code">Status: <span>${status}</span></p>
+          <p class="policy_font policy_enddate">Bitmə tarixi: <span>${endDate}</span></p>
+          <button class="policy-details-button" data-policy-number="${policy.POLICY_NUMBER || ''}">Ətraflı Məlumat</button>
+        </div>
+        <div style="width:307px;height:122px;margin-right:125px;"></div>
+      </li>`;
+  }
+
+  function renderPolicies(items){
+    if(!items || !items.length){
+      policiesErr.style.display='block';
+      policiesErr.textContent = 'Məlumat tapılmadı.';
+      return;
+    }
+    policiesErr.style.display='none';
+    policiesList.innerHTML = items.map(row).join('');
+    policiesList.querySelectorAll('.policy-details-button').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        const policyNumber = e.currentTarget.getAttribute('data-policy-number');
+        openPolicyDetails(policyNumber);
+      });
+    });
+  }
+
+  function formatPrice(v){ return v ? (parseFloat(v).toFixed(2)) : 'N/A'; }
+  function getStatus2(s){ return statusDesc[s] || s || ''; }
+
+  function openPolicyDetails(policyNumber){
+    if(!policyNumber) return;
+    preloader.style.display='flex';
+    popup.style.display='flex';
+
+    const fd = new FormData();
+    fd.append('policyNumber', policyNumber);
+
+    fetch('{% url "api_policy_info" %}', {
+      method: 'POST',
+      headers: {'X-CSRFToken': getCookie('csrftoken')},
+      body: fd
+    })
+    .then(r=>r.json())
+    .then(json=>{
+      if(!json.ok){ throw new Error(json.error || 'Xəta'); }
+      const d = json.data || {};
+      let html = `
+        <div class="policy__popup-wrapper">
+          <div class="policy__popup-name">Şəhədətnamə haqqında</div>
+          <div class="policy__popup-line"></div>
+          <div class="policy__popup-number"><p>Şəhədətnamə nömrəsi:</p> <span>${d.POLICY_NUMBER || ''}</span></div>
+      `;
+
+      const code = d.INSURANCE_CODE || '';
+      if (medicalCodes.includes(code)){
+        html += `
+          <div class="policy__info-section">
+            <div>
+              <p>Sığortalı: <span>${d.INSURER_CUSTOMER_NAME || 'N/A'}</span></p>
+              <p>Sığorta olunan: <span>${d.INSURED_CUSTOMER_NAME || 'N/A'}</span></p>
+              <p>Buraxılış tarixi: <span>${(d.POLICY_SALE_DATE||'').split('T')[0] || 'N/A'}</span></p>
+              <p>Başlama tarixi: <span>${(d.INSURANCE_START_DATE||'').split('T')[0] || 'N/A'}</span></p>
+              <p>Bitmə tarixi: <span>${(d.INSURANCE_END_DATE||'').split('T')[0] || 'N/A'}</span></p>
+              <p>Sığorta məbləği: <span>${formatPrice(d.PRICE)} ${d.CURRENCY_CODE||''}</span></p>
+              <p>Status: <span>${getStatus2(d.STATUS)}</span></p>
+            </div>
+          </div>`;
+      } else if (carCodes.includes(code)){
+        html += `
+          <div class="policy__info-section">
+            <p>Buraxılış tarixi: <span>${(d.POLICY_SALE_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Başlama tarixi: <span>${(d.INSURANCE_START_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Bitmə tarixi: <span>${(d.INSURANCE_END_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Marka: <span>${d.BRAND_NAME || 'N/A'}</span></p>
+            <p>Model: <span>${d.MODEL_NAME || 'N/A'}</span></p>
+            <p>Qeydiyyat nişanı: <span>${d.PLATE_NUMBER_FULL || 'N/A'}</span></p>
+            <p>Sığorta məbləği: <span>${formatPrice(d.PRICE)} ${d.CURRENCY_CODE||''}</span></p>
+            <p>Sığorta haqqı: <span>${formatPrice(d.TOTAL_INSURANCE_PRICE)} ${d.CURRENCY_CODE||''}</span></p>
+            <p>Status: <span>${getStatus2(d.STATUS)}</span></p>
+          </div>`;
+      } else {
+        html += `
+          <div class="policy__info-section">
+            <p>Buraxılış tarixi: <span>${(d.POLICY_SALE_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Başlama tarixi: <span>${(d.INSURANCE_START_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Bitmə tarixi: <span>${(d.INSURANCE_END_DATE||'').split('T')[0] || 'N/A'}</span></p>
+            <p>Sığorta məbləği: <span>${formatPrice(d.PRICE)} ${d.CURRENCY_CODE||''}</span></p>
+            <p>Sığorta haqqı: <span>${formatPrice(d.TOTAL_INSURANCE_PRICE)} ${d.CURRENCY_CODE||''}</span></p>
+            <p>Status: <span>${getStatus2(d.STATUS)}</span></p>
+          </div>`;
+      }
+
+      if (Array.isArray(d.COLLATERAL_NAMES) && d.COLLATERAL_NAMES.length){
+        html += `<div class="policy__collateral-section"><ul>`;
+        d.COLLATERAL_NAMES.forEach(c=>{
+          const name = (c.COLLATERAL_NAME || 'N/A');
+          html += `<li><span>&#9679; </span>${name}</li>`;
+        });
+        html += `</ul></div>`;
+      }
+
+      html += `<button id="close-popup" class="policy-details-button">Bağlamaq</button></div>`;
+      popupContent.innerHTML = html;
+      document.getElementById('close-popup').addEventListener('click', ()=> popup.style.display='none');
+    })
+    .catch(err=>{
+      popupContent.innerHTML = `<div class="msg-error">Məlumat tapılmadı: ${err.message||''}</div>
+                                <button id="close-popup" class="policy-details-button">Bağlamaq</button>`;
+      document.getElementById('close-popup').addEventListener('click', ()=> popup.style.display='none');
+    })
+    .finally(()=> preloader.style.display='none');
+  }
+
+  // загрузка списка
+  fetch('{% url "api_policies" %}')
+    .then(r=>r.json())
+    .then(json=>{
+      if(!json.ok) throw new Error(json.error || 'Xəta');
+      const items = json.policies || [];
+      renderPolicies(items);
+    })
+    .catch(err=>{
+      policiesErr.style.display='block';
+      policiesErr.textContent = 'Polis məlumatları yüklənmədi: ' + (err.message||'');
+    });
+
+})();
+</script>
+{% endblock %}
