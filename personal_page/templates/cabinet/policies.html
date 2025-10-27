@@ -66,6 +66,7 @@
     const title = insuranceDesc[policy.INSURANCE_CODE] || policy.INSURANCE_CODE || '';
     const status = statusDesc[policy.STATUS] || policy.STATUS || '';
     const endDate = policy.INSURANCE_END_DATE ? (policy.INSURANCE_END_DATE.split('T')[0]) : 'N/A';
+    const link = `/policies/${encodeURIComponent(policy.POLICY_NUMBER)}/`; // ← ссылка на новую страницу
     return `
       <li class="polis_single_element" style="justify-content:space-between;display:flex;align-items:center;">
         <div>
@@ -74,11 +75,12 @@
           <p class="policy_font policy_number">Şəhədətnamə nömrəsi: <span>${policy.POLICY_NUMBER || ''}</span></p>
           <p class="policy_font status_code">Status: <span>${status}</span></p>
           <p class="policy_font policy_enddate">Bitmə tarixi: <span>${endDate}</span></p>
-          <button class="policy-details-button" data-policy-number="${policy.POLICY_NUMBER || ''}">Ətraflı Məlumat</button>
+          <a class="policy-details-button" href="${link}">Ətraflı səhifə</a>
         </div>
         <div style="width:307px;height:122px;margin-right:125px;"></div>
       </li>`;
   }
+
 
   function renderPolicies(items){
     if(!items || !items.length){
@@ -88,12 +90,6 @@
     }
     policiesErr.style.display='none';
     policiesList.innerHTML = items.map(row).join('');
-    policiesList.querySelectorAll('.policy-details-button').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        const policyNumber = e.currentTarget.getAttribute('data-policy-number');
-        openPolicyDetails(policyNumber);
-      });
-    });
   }
 
   function formatPrice(v){ return v ? (parseFloat(v).toFixed(2)) : 'N/A'; }
@@ -188,13 +184,13 @@
     .then(r=>r.json())
     .then(json=>{
       if(!json.ok) throw new Error(json.error || 'Xəta');
-      const items = json.policies || [];
-      renderPolicies(items);
+      renderPolicies(json.policies || []);
     })
     .catch(err=>{
       policiesErr.style.display='block';
       policiesErr.textContent = 'Polis məlumatları yüklənmədi: ' + (err.message||'');
     });
+
 
 })();
 </script>

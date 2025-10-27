@@ -5,6 +5,8 @@ urlpatterns = [
     # страницы
     path('', views.welcome, name='cabinet_welcome'),
     path('policies/', views.policies, name='cabinet_policies'),
+    path('policies/<policy_number>/', views.policy_detail, name='cabinet_policy_detail'),  # ← НОВОЕ
+
     path('doctors/', views.doctors, name='cabinet_doctors'),
     path('doctors/<speciality_id>/', views.doctors_by_speciality, name='cabinet_doctors_by_speciality'),
     path('doctors/<speciality_id>/<doctor_id>/', views.doctor_detail, name='cabinet_doctor_detail'),

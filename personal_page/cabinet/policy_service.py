@@ -108,9 +108,6 @@ def get_customer_policies(pin_code: str) -> dict:
     return {"ok": True, "policies": policies}
 
 def get_policy_informations(policy_number: str) -> dict:
-    """
-    Возвращает {"ok": True, "data": {...}} или {"ok": False, "error": "..."}
-    """
     cfg = settings.EXTERNAL_AUTH
     url = cfg['URL']
     timeout = cfg.get('TIMEOUT', 15)
@@ -142,19 +139,49 @@ def get_policy_informations(policy_number: str) -> dict:
     except ET.ParseError:
         return {"ok": False, "error": "invalid_inner_xml"}
 
-    # Превратим одну ступень XML в dict (плоско)
-    data = {}
-    for child in list(x):
-        # Если вложенные коллекции (например, COLLATERAL_NAMES), соберём списком
-        if list(child):
-            if child.tag.upper() == 'COLLATERAL_NAMES':
-                data['COLLATERAL_NAMES'] = [
-                    {cc.tag: (cc.text or '').strip() for cc in list(item)}
-                    for item in child.findall('./*')
-                ]
+    data: dict = {}
+
+    def _kv_from(node: ET.Element) -> dict:
+        return {child.tag: (child.text or '').strip() for child in list(node)}
+
+
+    if x.tag.upper() == 'POLICY_INFORMATION':
+        data.update(_kv_from(x))
+    else:
+
+        pi = x.find('.//POLICY_INFORMATION')
+        if pi is not None:
+            data.update(_kv_from(pi))
+
+        
+        for child in list(x):
+            tag_u = child.tag.upper()
+            if tag_u in ('POLICY_INFORMATION', 'COLLATERAL_NAMES'):
+                continue
+            if list(child):
+                # редкие вложенные куски (например, суммы в подузле) — можно сохранить словарём
+                data.setdefault(child.tag, _kv_from(child))
             else:
-                data[child.tag] = {cc.tag: (cc.text or '').strip() for cc in list(child)}
-        else:
-            data[child.tag] = (child.text or '').strip()
+                # простые плоские поля
+                if child.text and child.tag not in data:
+                    data[child.tag] = child.text.strip()
+
+
+    coll = []
+    cn_parent = x.find('.//COLLATERAL_NAMES')
+    if cn_parent is not None:
+        # собираем все дочерние элементы с полями
+        for item in list(cn_parent):
+            if list(item):
+                coll.append(_kv_from(item))
+            else:
+                # иногда бывает просто <COLLATERAL_NAME>Text</COLLATERAL_NAME>
+                coll.append({item.tag: (item.text or '').strip()})
+    if coll:
+        data['COLLATERAL_NAMES'] = coll
 
     return {"ok": True, "data": data}
+
+
+
+

@@ -8,6 +8,8 @@ from .otp_service import create_otp_and_send_sms
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
+
+from .policy_service import get_customer_policies, get_policy_informations
 from .doctor_service import (
     get_specialities,
     get_doctors_by_speciality,
@@ -17,6 +19,32 @@ from .doctor_service import (
 OTP_TTL_SECONDS = 60
 OTP_MAX_ATTEMPTS = 3
 
+INSURANCE_TITLES = {
+    "AATPL":"Avtomobilin İcbari Sığortası",
+    "AS":"Avtomobilin Kasko Sığortası", "VMI":"Avtomobilin Kasko Sığortası",
+    "AS-A47-GD":"Avtomobilin Kasko Sığortası", "AS-FQ":"Avtomobilin Kasko Sığortası",
+    "AS-F":"Avtomobilin Kasko Sığortası", "AS-H":"Avtomobilin Kasko Sığortası", "REVAS":"Avtomobilin Kasko Sığortası",
+    "EE":"Elektron cihazların sığortası",
+    "DETPL":"Əmlak İstismarın İcbari Sığortası", "DE":"Əmlakın İcbari Sığortası",
+    "VHI":"Əmlakın könüllü sığortası", "VPI-FL":"Əmlakın könüllü sığortası", "VPI-F":"Əmlakın könüllü sığortası",
+    "VPI-H":"Əmlakın könüllü sığortası", "VPI":"Əmlakın könüllü sığortası",
+    "VPI-HN":"Əmlakın könüllü sığortası", "VPI-FN":"Əmlakın könüllü sığortası", "REVPI":"Əmlakın könüllü sığortası",
+    "CPA":"Fərdi qəza sığortası", "PA":"Fərdi qəza sığortası",
+    "CAR":"İnşaat risklərin sığортası",
+    "EL":"İşəgötürənin məsuliyyətinin sığortası", "ELN":"İşəgötürənin məsuliyyətinin sığортası",
+    "TPL":"Məsuliyyət sığortası", "TPLN":"Məsuliyyət sığортası",
+    "CMMI":"Peşə Məsuliyyətinin sığортası", "PI":"Peşə Məsuliyyətinin sığортası", "CDOL":"Peşə Məsuliyyətinin sığортası",
+    "CPM":"Podratçının maşın və avadanlığın sığортası",
+    "TI":"Səyahət sığортası",
+    "VPI-R":"Təkərlərin sığортası",
+    "LI":"Tibbi Sığorta", "LE":"Tibbi Sığorta", "ONK-A47":"Tibbi Sığorta", "ONK":"Tibbi Sığorta",
+    "TTU":"Tibbi Sığorta", "LE-D":"Tibbi Sığorta",
+    "YK":"Yaşıl Kart", "YS-OC":"Yük sığортası", "YS":"Yük sığортası", "YSN":"Yük sığортası",
+}
+
+MEDICAL_CODES = {"LI","LE","ONK-A47","ONK","TTU","LE-D","YK","YS-OC","YS","YSN"}
+CAR_CODES = {"AATPL","AS","VMI","AS-A47-GD","AS-FQ","AS-F","AS-H","REVAS"}
+STATUS_TITLES = {"B":"Bitdi","D":"Davam Edir","E":"Sonlandırıldı"}
 
 def index(request: HttpRequest):
     if not request.session.get('loggedin'):
@@ -197,6 +225,47 @@ def api_policy_info(request: HttpRequest):
         return JsonResponse({"error": "policy_number_required"}, status=400)
     result = get_policy_informations(policy_number)
     return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+
+def policy_detail(request: HttpRequest, policy_number: str):
+    if not request.session.get('loggedin'):
+        return redirect('login')
+
+    r = get_policy_informations(policy_number)
+    if not r.get("ok"):
+        messages.error(request, f"Polis yüklənmədi: {r.get('error')}")
+        return redirect('cabinet_policies')
+
+    d = r.get("data") or {}
+
+    # Надёжные извлечения с фолбэками
+    code = (d.get("INSURANCE_CODE")
+            or d.get("INSURANCE_TYPE_CODE")
+            or d.get("INS_CODE")
+            or "").strip()
+
+    status_code = (d.get("STATUS")
+                   or d.get("POLICY_STATUS")
+                   or d.get("STATUS_CODE")
+                   or "").strip()
+
+    # Номер полиса из ответа или из URL (как резерв)
+    number = (d.get("POLICY_NUMBER") or policy_number).strip()
+
+    return render(request, 'cabinet/policy_detail.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "policies",
+        "policy": d,
+        "policy_number": number,
+        "policy_title": INSURANCE_TITLES.get(code, code or "—"),
+        "status_title": STATUS_TITLES.get(status_code, status_code or "—"),
+        "is_medical": code in MEDICAL_CODES,
+        "is_car": code in CAR_CODES,
+    })
+
+
+
 
 def doctors(request: HttpRequest):
     if not request.session.get('loggedin'):
