@@ -1,94 +1,473 @@
+.personal__wrapper {
+    display: flex;
+    min-height: 100vh;
+}
 
-    .personal__wrapper {
-        display: flex;
-        min-height: 100vh;
+.perosnal__account__info {
+    width: 320px;
+    background: #be0a04;
+    color: #fff;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    min-height: 100vh;
+}
+
+.personal__account_image img {
+    max-width: 180px;
+    height: auto;
+    display: block;
+}
+
+.personal__account__info-additional a {
+    display: block;
+    font-size: 21px;
+    padding: 15px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #e5e7eb;
+    margin: 6px 0;
+    background: transparent
+}
+
+.personal__account__info-additional a.active {
+    background: #fff;
+    color: #be0a04;
+
+}
+
+.logout-btn {
+    margin-top: auto;
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #be0a04;
+    text-align: center;
+    text-decoration: none;
+}
+
+.whatsapp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    color: #22c55e;
+    text-decoration: none;
+}
+
+.personal__account__data-wrapper {
+    flex: 1;
+    padding: 32px;
+    min-width: 0;
+}
+
+.personal__account-desc {
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
+.personal__wrapper {
+    display: flex;
+    min-height: 100vh
+}
+
+.perosnal__account__info {
+    width: 320px;
+    background: #be0a04;
+    color: #fff;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    min-height: 100vh;
+    align-items: center;
+}
+
+.personal__account_image img {
+    max-width: 180px;
+    height: auto;
+    display: block
+}
+
+.personal__account__info-additional a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #e5e7eb;
+    margin: 6px 0
+}
+
+.personal__account__info-additional a.active {
+    background: #fff;
+    color: #be0a04;
+}
+
+.logout-btn {
+    margin-top: auto;
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #fff;
+    color: #be0a04;
+    text-align: center;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 240px;
+    height: 50px;
+    background-color: #fff;
+    color: #be0a04;
+    padding: 0px 20px;
+    border-radius: 50px;
+    margin-top: 50px;
+    font-size: 20px;
+}
+
+.personal__account__data-wrapper {
+    flex: 1;
+    padding: 32px;
+    min-width: 0
+}
+
+.personal__account-desc {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    font-size: 20px;
+}
+
+/******************/
+/******************/
+/******************/
+.doctors_desc {
+    font-weight: 700;
+    margin: 0 0 12px
+}
+
+.speciality_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px
+}
+
+.doctor_card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    transition: transform .08s ease
+}
+
+.doctor_card:hover {
+    transform: translateY(-2px)
+}
+
+.doctor_card img {
+    width: 36px;
+    height: 36px
+}
+
+.muted {
+    color: #6b7280
+}
+
+.msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+}
+
+.search_row {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 12px
+}
+
+.search_row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #dcdde1;
+    border-radius: 10px
+}
+
+.search_row button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #b91c1c;
+    color: #fff;
+    cursor: pointer
+}
+
+/*************************/
+.hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px
+}
+
+.back {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: #b91c1c;
+    color: #fff;
+    text-decoration: none
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    display: flex;
+    gap: 12px;
+
+    flex-direction: column;
+}
+
+.card img {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f3f4f6
+}
+
+.name {
+    font-weight: 700;
+    margin: 0
+}
+
+.muted {
+    color: #6b7280;
+    margin: 2px 0 0
+}
+
+.msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+}
+
+.toolbar {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 12px
+}
+
+.toolbar input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #dcdde1;
+    border-radius: 10px
+}
+
+.toolbar button {
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #b91c1c;
+    color: #fff;
+    cursor: pointer
+}
+
+.name {
+    color: #b91c1c;
+}
+
+/**********************/
+
+.hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px
+}
+
+.back {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: #b91c1c;
+    color: #fff;
+    text-decoration: none;
+}
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06)
+}
+
+.row {
+    display: flex;
+    gap: 16px;
+    align-items: center
+}
+
+.photo {
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #f3f4f6
+}
+
+.title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 18px
+}
+
+.muted {
+    color: #6b7280
+}
+
+.list {
+    margin-top: 16px;
+    display: grid;
+    gap: 10px
+}
+
+.item {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px
+}
+
+.item p {
+    margin: 2px 0
+}
+
+.msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+}
+
+/******************/
+
+
+
+.polis__nam-desc {
+    font-weight: 700;
+    margin: 0 0 10px;
+    font-size: 22px;
+}
+.doctors_desc{
+      font-size: 22px;  
+}
+.polis_single_element {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    margin-bottom: 12px
+}
+
+.policy-details-button {
+display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0px;
+    background-color: #b91c1c;
+    color: #fff;
+    font-size: 16px;
+    margin-top: 15px;
+    border-radius: 10px;
+    width: 150px;
+}
+
+.msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+}
+
+.popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0, 0, 0, .5);
+    align-items: center;
+    justify-content: center;
+    padding: 16px
+}
+
+.popup-content {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 720px;
+    width: 100%;
+    padding: 20px
+}
+
+#preloader {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .6)
+}
+
+.loader {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 4px solid #111827;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite
+}
+.polis__single__name{
+    font-size: 22px;
+    margin-bottom: 5px;
+
+}
+.policy_number{
+    font-size: 17px;
+}
+.status_code{
+     font-size: 17px;   
+}
+.policy_enddate{
+    font-size: 17px; 
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg)
     }
-
-    .perosnal__account__info {
-        width: 320px;
-        background: #0b1324;
-        color: #fff;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        position: sticky;
-        top: 0;
-        align-self: flex-start;
-        min-height: 100vh;
-    }
-
-    .personal__account_image img {
-        max-width: 180px;
-        height: auto;
-        display: block;
-    }
-
-    .personal__account__info-additional a {
-        display: block;
-        padding: 10px 12px;
-        border-radius: 8px;
-        text-decoration: none;
-        color: #e5e7eb;
-        margin: 6px 0;
-        background: transparent
-    }
-
-    .personal__account__info-additional a.active {
-        background: #111827;
-        color: #fff;
-    }
-
-    .logout-btn {
-        margin-top: auto;
-        display: block;
-        width: 100%;
-        padding: 10px 14px;
-        border-radius: 8px;
-        background: #ef4444;
-        color: #fff;
-        text-align: center;
-        text-decoration: none;
-    }
-
-    .whatsapp {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-        color: #22c55e;
-        text-decoration: none;
-    }
-
-    .personal__account__data-wrapper {
-        flex: 1;
-        padding: 32px;
-        min-width: 0;
-    }
-
-    .personal__account-desc {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
-    }
-
-    .tab-content {
-        display: none;
-    }
-
-    .tab-content.active {
-        display: block;
-    }
-
-
-    .personal__wrapper{display:flex;min-height:100vh}
-    .perosnal__account__info{width:320px;background:#0b1324;color:#fff;padding:24px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;align-self:flex-start;min-height:100vh}
-    .personal__account_image img{max-width:180px;height:auto;display:block}
-    .personal__account__info-additional a{display:block;padding:10px 12px;border-radius:8px;text-decoration:none;color:#e5e7eb;margin:6px 0}
-    .personal__account__info-additional a.active{background:#111827;color:#fff}
-    .logout-btn{margin-top:auto;display:block;width:100%;padding:10px 14px;border-radius:8px;background:#ef4444;color:#fff;text-align:center;text-decoration:none}
-    .whatsapp{display:flex;align-items:center;gap:8px;margin-top:8px;color:#22c55e;text-decoration:none}
-    .personal__account__data-wrapper{flex:1;padding:32px;min-width:0}
-    .personal__account-desc{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
+}

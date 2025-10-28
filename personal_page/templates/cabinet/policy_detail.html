@@ -3,54 +3,13 @@
 
 {% block head_extra %}
 <style>
-    .hdr {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 12px
-    }
-
-    .back {
-        padding: 8px 12px;
-        border-radius: 10px;
-        background: #111827;
-        color: #fff;
-        text-decoration: none
-    }
-
-    .card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 16px;
-        box-shadow: 0 6px 24px rgba(0, 0, 0, .06)
-    }
-
-    .row {
-        display: grid;
-        gap: 8px
-    }
-
-    .muted {
-        color: #6b7280
-    }
-
-    .kv p {
-        margin: 2px 0
-    }
-
-    .chips {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 6px
-    }
-
-    .chip {
-        background: #f3f4f6;
-        border-radius: 999px;
-        padding: 6px 10px;
-        font-size: 12px
-    }
+.row{
+    flex-direction: column;
+    align-items: initial;
+}
+.kv{
+    font-size: 16px;
+}
 </style>
 {% endblock %}
 
@@ -65,8 +24,6 @@
 
         <div class="kv">
             <p><strong>Şəhadətnamə:</strong> {{ policy_number }}</p>
-            <p><strong>Növ:</strong> {{ policy_title }}</p>
-            <p><strong>Status:</strong> {{ status_title }}</p>
             <p><strong>Valyuta:</strong> {{ policy.CURRENCY_CODE }}</p>
             <p><strong>Buraxılış tarixi:</strong> {{ policy.POLICY_SALE_DATE|default:""|slice:":10" }}</p>
             <p><strong>Başlama tarixi:</strong> {{ policy.INSURANCE_START_DATE|default:""|slice:":10" }}</p>
@@ -94,8 +51,7 @@
         <hr>
         <div class="kv">
             <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
-            <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE
-                }}</p>
+            <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
         </div>
         {% endif %}
     </div>

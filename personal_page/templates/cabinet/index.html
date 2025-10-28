@@ -1,15 +1,17 @@
 {% load static %}
 <!doctype html>
 <html lang="az">
+
 <head>
   <meta charset="utf-8">
   <title>A-Group Şəxsi kabinet</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <!-- Подключай свои стили -->
   <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
   <link rel="stylesheet" href="{% static 'cabinet/css/dashboard.css' %}">
 </head>
+
 <body>
 
   <div class="personal__wrapper">
@@ -36,9 +38,9 @@
 
       <a class="logout-btn" href="/logout">Çıxış</a>
       <a target="_blank" class="whatsapp"
-         href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
-        <span style="font-size:20px;">🟢</span>
-        <p style="margin:0;">Dərman çatdırılması</p>
+        href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
+        <i class="fa fa-whatsapp" aria-hidden="true"></i>
+        <p>Dərman çatdırılması</p>
       </a>
     </aside>
 
@@ -53,7 +55,8 @@
       <!-- Tab sections -->
       <section id="welcome" class="tab-content active">
         <!-- стартовый блок/дашборд -->
-        <div class="card" style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 6px 24px rgba(0,0,0,.06);">
+        <div class="card"
+          style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 6px 24px rgba(0,0,0,.06);">
           <p style="margin:0;">Buradan bölmələr üzrə məlumatlara keçid edə bilərsiniz.</p>
         </div>
       </section>
@@ -129,11 +132,18 @@
       });
 
       // если пришли с hash — активируем соответствующий таб
-      const initial = (location.hash || '#welcome').replace('#','');
+      const initial = (location.hash || '#welcome').replace('#', '');
       if (document.getElementById(initial)) {
         activate(initial);
       }
     })();
   </script>
+
+  <script defer=""
+    src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
+    integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
+    data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;cb23ab2e8ebe4df4914df3b3b4dc2c05&quot;,&quot;r&quot;:1,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>

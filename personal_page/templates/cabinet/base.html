@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>{% block title %}A-Group Şəxsi kabinet{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
   <link rel="stylesheet" href="{% static 'cabinet/css/dashboard.css' %}">
   {% block head_extra %}{% endblock %}
@@ -33,8 +33,10 @@
       </div>
 
       <a class="logout-btn" href="/logout">Çıxış</a>
-      <a target="_blank" class="whatsapp" href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
-        <span style="font-size:20px;">🟢</span><p style="margin:0;">Dərman çatdırılması</p>
+      <a target="_blank" class="whatsapp"
+        href="https://wa.me/994502285753?text=Salam,%20Dərman%20çatdırılması%20haqqında%20məlumat%20ala%20bilərəmmi?">
+        <i class="fa fa-whatsapp" aria-hidden="true"></i>
+        <p>Dərman çatdırılması</p>
       </a>
     </aside>
 
