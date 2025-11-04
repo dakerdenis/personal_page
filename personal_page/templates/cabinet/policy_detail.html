@@ -27,7 +27,7 @@
             <p><strong>Valyuta:</strong> {{ policy.CURRENCY_CODE }}</p>
             <p><strong>Buraxılış tarixi:</strong> {{ policy.POLICY_SALE_DATE|default:""|slice:":10" }}</p>
             <p><strong>Başlama tarixi:</strong> {{ policy.INSURANCE_START_DATE|default:""|slice:":10" }}</p>
-            <p><strong>Bitmə tarixi:</strong> {{ policy.INSURANCE_END_DATE|default:""|slice:":10" }}</p>
+          <!--p><strong>Bitmə tarixi:</strong> {{ policy.INSURANCE_END_DATE|default:""|slice:":10" }}</p> -->
         </div>
 
         {% if is_medical %}
