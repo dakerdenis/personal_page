@@ -8,30 +8,39 @@
 {% endblock %}
 
 {% block content %}
-  <div class="hdr">
-    <a class="back" href="{% url 'cabinet_doctors_by_speciality' speciality_id=speciality_id %}">⬅ Geri</a>
-    <h2 style="margin:0">Həkim: {{ doctor_id }}</h2>
-  </div>
+<div class="hdr">
+  <a class="back" href="{% url 'cabinet_doctors_by_speciality' speciality_id=speciality_id %}">⬅ Geri</a>
+  <h2 style="margin:0">Həkim: {{ doctor_id }}</h2>
+</div>
 
-  <div id="err" class="msg-error" style="display:none;"></div>
+<div id="err" class="msg-error" style="display:none;"></div>
 
-  <div class="card">
-    <div class="row">
-      <img id="photo" class="photo" alt="">
-      <div>
-        <p id="docName" class="title">—</p>
-        <p id="docPlace" class="muted">İş yeri: —</p>
-        <p class="muted">ID: {{ doctor_id }}</p>
-      </div>
-    </div>
-
-    <div class="list" id="career">
-      <!-- записи карьеры -->
+<div class="card">
+  <div class="row">
+    <img id="photo" class="photo" alt="">
+    <div>
+      <p id="docName" class="title">—</p>
+      <p id="docPlace" class="muted">İş yeri: —</p>
+      <p class="muted">ID: {{ doctor_id }}</p>
     </div>
   </div>
+
+  <div class="list" id="career">
+    <!-- записи карьеры -->
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <button id="btnRegister" class="policy-details-button">Həkimə qeydiyyat</button>
+</div>
+
+
+
 {% endblock %}
 
 {% block body_scripts %}
+
+
 <script>
 (function(){
   const doctorId = "{{ doctor_id|escapejs }}";
@@ -42,7 +51,7 @@
   const placeEl  = document.getElementById('docPlace');
   const wrap     = document.getElementById('career');
 
-  // 1) подтянем карточку врача из списка по специализации
+  // 1) карточка врача
   fetch("{% url 'api_doctors_by_speciality' speciality_id=speciality_id %}")
     .then(r => r.json())
     .then(js => {
@@ -54,10 +63,9 @@
           if ((d.FILE_CONTENT || '').trim()) photo.src = "data:image/jpeg;base64," + d.FILE_CONTENT.trim();
         }
       }
-    })
-    .catch(()=>{ /* молча, это не блокер */ });
+    }).catch(()=>{});
 
-  // 2) загрузим карьеры
+  // 2) карьера
   fetch("{% url 'api_doctor_career' doctor_id=doctor_id %}")
     .then(r => r.json())
     .then(json => {
@@ -67,13 +75,9 @@
         wrap.innerHTML = '<div class="item"><p>Məlumat tapılmadı.</p></div>';
         return;
       }
-
-      // если из карьеры можно что-то дополнить — аккуратно дополним
       const first = arr[0] || {};
       if ((!nameEl.textContent || nameEl.textContent === '—') && first.NAME) nameEl.textContent = first.NAME;
       if ((placeEl.textContent || '').endsWith('—') && first.WORKPLACE_NAME) placeEl.textContent = 'İş yeri: ' + first.WORKPLACE_NAME;
-      // фото в карьерах обычно нет, но на всякий случай
-      if (!photo.src && first.FILE_CONTENT) photo.src = "data:image/jpeg;base64," + first.FILE_CONTENT;
 
       wrap.innerHTML = arr.map(c => {
         const sp = c.SPECIALITY_AZ || c.SPECIALITY || '';
@@ -95,7 +99,100 @@
       err.style.display = 'block';
       err.textContent = 'Məlumat yüklənmədi: ' + (e.message || '');
     });
+
+  // ====== Регистрация к врачу ======
+
+  // лёгкий попап
+  const popup = document.createElement('div');
+  popup.id = 'register-doctor-popup';
+  popup.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:1000;';
+  popup.innerHTML = `
+    <div class="card" style="min-width:320px;max-width:520px;background:#fff;position:relative">
+      <button id="xClose" style="position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:6px;background:#eee;cursor:pointer">×</button>
+      <h3 style="margin-top:0">Həkimə Qeydiyyat</h3>
+      <p class="muted">Zəhmət olmasa tibbi sığorta polisiniz seçin:</p>
+      <div id="policiesBox" style="max-height:260px;overflow:auto;margin:8px 0 12px"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button id="btnConfirm" class="policy-details-button">Təsdiqlə</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+
+  const btnRegister = document.getElementById('btnRegister');
+  const xClose = popup.querySelector('#xClose');
+  const policiesBox = popup.querySelector('#policiesBox');
+  const btnConfirm = popup.querySelector('#btnConfirm');
+
+  function getCookie(name){
+    const m = document.cookie.match(new RegExp('(^|; )'+name+'=([^;]*)'));
+    return m ? decodeURIComponent(m[2]) : null;
+  }
+
+  btnRegister.addEventListener('click', async () => {
+    // подтянуть активные медполисы
+    policiesBox.innerHTML = 'Yüklənir...';
+    popup.style.display = 'flex';
+    try{
+      const r = await fetch("{% url 'api_active_med_policies' %}");
+      const js = await r.json();
+      if (!js.ok){ throw new Error(js.error || 'Xəta'); }
+      const arr = js.policies || [];
+      if (!arr.length){
+        policiesBox.innerHTML = '<div class="msg-error">Aktiv tibbi polis tapılmadı.</div>';
+        return;
+      }
+      policiesBox.innerHTML = arr.map((p, i) => {
+        const card = p.card_number || '';
+        const warn = card ? '' : `<span class="muted" style="color:#b91c1c"> (kart nömrəsi tapılmadı)</span>`;
+        return `
+          <label style="display:flex;gap:8px;align-items:center;margin:6px 0;">
+            <input type="radio" name="selectedPolicy" value="${card || (p.policy_number||'')}" ${i===0?'checked':''}>
+            <span>${p.policy_number || '—'} ${warn}</span>
+          </label>
+        `;
+      }).join('');
+    }catch(e){
+      policiesBox.innerHTML = '<div class="msg-error">Məlumat yüklənmədi.</div>';
+    }
+  });
+
+  xClose.addEventListener('click', ()=> popup.style.display = 'none');
+
+  btnConfirm.addEventListener('click', async () => {
+    const cho = popup.querySelector('input[name="selectedPolicy"]:checked');
+    if (!cho){ alert('Zəhmət olmasa bir polis seçin.'); return; }
+    const cardNumber = cho.value || '';
+    if (!/\d{6}\/\d{2}/.test(cardNumber)){
+      alert('Kart nömrəsi düzgün formatda deyil (NNNNNN/NN).');
+      return;
+    }
+    btnConfirm.disabled = true;
+    try{
+      const r = await fetch("{% url 'api_register_doctor' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'X-CSRFToken': getCookie('csrftoken') || ''
+        },
+        body: `doctorId=${encodeURIComponent(doctorId)}&cardNumber=${encodeURIComponent(cardNumber)}`
+      });
+      const js = await r.json();
+      if (js.ok){
+        alert('Siz uğurla həkimə qeydiyyatdan keçdiniz.');
+        popup.style.display = 'none';
+      }else{
+        alert('Qeydiyyat uğursuz oldu. Bir az sonra yenidən cəhd edin.');
+      }
+    }catch(e){
+      alert('Xəta baş verdi. Bir az sonra yenidən cəhd edin.');
+    }finally{
+      btnConfirm.disabled = false;
+    }
+  });
 })();
 </script>
+
+
+
 
 {% endblock %}

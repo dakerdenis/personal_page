@@ -1,11 +1,9 @@
-# cabinet/doctor_service.py
-import logging
 import re
 import xml.etree.ElementTree as ET
-from html import unescape as html_unescape
 from xml.sax.saxutils import escape as xml_escape
 import requests
 from django.conf import settings
+import logging
 
 logger = logging.getLogger('cabinet.auth')
 
@@ -52,6 +50,22 @@ SOAP11_GET_DOCTOR_CAREER = '''<?xml version="1.0" encoding="utf-8"?>
 </soap:Envelope>
 '''
 
+SOAP11_REG_FOR_DOCTOR = '''<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RegistrationForDoctor xmlns="http://tempuri.org/">
+      <userName>{user}</userName>
+      <password>{password}</password>
+      <pinCode>{pin}</pinCode>
+      <cardNumber>{card}</cardNumber>
+      <customerId>{doctor}</customerId>
+    </RegistrationForDoctor>
+  </soap:Body>
+</soap:Envelope>
+'''
+
 # --- helpers (единственные, без дубликатов) ---
 
 def _post_soap(url: str, payload: str, action: str, timeout: int, verify_ssl: bool) -> requests.Response:
@@ -61,27 +75,26 @@ def _post_soap(url: str, payload: str, action: str, timeout: int, verify_ssl: bo
     }
     return requests.post(url, data=payload.encode('utf-8'), headers=headers, timeout=timeout, verify=verify_ssl)
 
-def _extract_inner_string(result_tag: str, soap_xml: str) -> str | None:
-    """
-    Возвращает декодированный inner-XML из <{result_tag}>...</{result_tag}> или <string>...</string>.
-    ВАЖНО: делаем html_unescape для &lt;...&gt;.
-    """
-    m = re.search(fr'<{result_tag}[^>]*>(.*?)</{result_tag}>', soap_xml, flags=re.S | re.I)
+
+
+
+
+def _extract_inner_string(tag: str, body: str) -> str | None:
+    m = re.search(fr'<{tag}[^>]*>(.*?)</{tag}>', body, flags=re.S | re.I)
     if m:
-        inner = html_unescape((m.group(1) or '').strip())
-        return inner if inner else None
-
-    m2 = re.search(r'<string\b[^>]*>(.*?)</string>', soap_xml, flags=re.S | re.I)
+        return (m.group(1) or '').strip()
+    m2 = re.search(r'<string\b[^>]*>(.*?)</string>', body, flags=re.S | re.I)
     if m2:
-        inner = html_unescape((m2.group(1) or '').strip())
-        return inner if inner else None
-
+        return (m2.group(1) or '').strip()
     try:
-        root = ET.fromstring(soap_xml)
-        text = html_unescape((root.text or '').strip())
-        return text if text else None
+        root = ET.fromstring(body)
+        return (root.text or '').strip() or None
     except ET.ParseError:
         return None
+
+
+
+
 
 def _dict_from_children(node: ET.Element) -> dict:
     return {child.tag: (child.text or '').strip() for child in list(node)}
@@ -188,3 +201,58 @@ def get_doctor_career(doctor_id: str) -> dict:
             items = [_dict_from_children(n)]
 
     return {"ok": True, "career": items}
+
+
+
+def registration_for_doctor(pin_code: str, card_number: str, doctor_id: str) -> dict:
+    """
+    Возвращает {"ok": True} при успехе, иначе {"ok": False, "error": "..."}.
+    Требует card_number в формате NNNNNN/NN (6 цифр, слэш, 2 цифры).
+    """
+    cfg = settings.EXTERNAL_AUTH
+    url = cfg['URL']
+    timeout = cfg.get('TIMEOUT', 15)
+    verify_ssl = cfg.get('VERIFY_SSL', True)
+
+    # нормализуем номер карты (вытягиваем вид 123456/78 откуда бы он ни пришёл)
+    m = re.search(r'(\d{6}\/\d{2})', card_number or '')
+    if not m:
+        return {"ok": False, "error": "invalid_card_number_format"}
+    card_fmt = m.group(1)
+
+    payload = SOAP11_REG_FOR_DOCTOR.format(
+        user=xml_escape(cfg['USERNAME']),
+        password=xml_escape(cfg['PASSWORD']),
+        pin=xml_escape((pin_code or '').strip()),
+        card=xml_escape(card_fmt),
+        doctor=xml_escape((doctor_id or '').strip()),
+    )
+
+    try:
+        r = _post_soap(url, payload, "RegistrationForDoctor", timeout, verify_ssl)
+    except requests.RequestException as e:
+        logger.exception("HTTP error during RegistrationForDoctor")
+        return {"ok": False, "error": f"http_error: {e}"}
+
+    if r.status_code != 200:
+        logger.error("RegistrationForDoctor non-200: %s", r.status_code)
+        return {"ok": False, "error": f"http_status_{r.status_code}"}
+
+    inner = _extract_inner_string("RegistrationForDoctorResult", r.text)
+    if not inner:
+        return {"ok": False, "error": "empty_or_invalid_inner"}
+
+    try:
+        x = ET.fromstring(inner)
+    except ET.ParseError:
+        return {"ok": False, "error": "invalid_inner_xml"}
+
+    # ожидаем <RESULT><SUCCESS>true</SUCCESS></RESULT>
+    succ = (x.findtext('.//SUCCESS') or '').strip().lower()
+    if succ == 'true':
+        return {"ok": True}
+    return {"ok": False, "error": "registration_failed"}
+
+
+
+

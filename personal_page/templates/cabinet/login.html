@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
   <link rel="stylesheet" href="{% static 'cabinet/css/login.css' %}">
 </head>
+
 <body>
   <div class="login__container">
     <div class="login__container-form">
@@ -17,49 +19,66 @@
           <p>Xoş gəldiniz!</p>
           <span>A-Qroup şəxsi kabineti</span>
         </div>
-
         <div class="form__input__container">
           <p class="form__input__desc">Fin kodu:</p>
-          <input placeholder="A222222" value="A222222" type="text" name="pinCode" id="pinCode"
-                 required minlength="7" maxlength="7">
+          <input placeholder="A222222" value="A222222" type="text" name="pinCode" id="pinCode" required minlength="7"
+            maxlength="7">
         </div>
-
         <div class="form__input__container">
           <p class="form__input__desc">Şəhədətnamə nömrəsi:</p>
           <input placeholder="MIP2500318" value="MIP2500318" type="text" name="policyNumber" id="policyNumber" required>
         </div>
-
         <div class="form__input__container">
           <p class="form__input__desc">Mobil nömrə:</p>
-          <input placeholder="994507506901" type="text" name="phoneNumber" id="phoneNumber"
-                 required inputmode="numeric" pattern="^994\d{9}$" maxlength="12">
+          <input placeholder="994507506901" type="text" name="phoneNumber" id="phoneNumber" required inputmode="numeric"
+            pattern="^994\d{9}$" maxlength="12">
         </div>
+
+        {% if need_captcha %}
+        <div class="form__input__container form__input__container-flex">
+          <p class="form__input__desc">CAPTCHA:</p>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+            <img id="captchaImg" src="{% url 'captcha_image' %}?t={{ now|default:0 }}" alt="CAPTCHA" width="130"
+              height="46" style="border-radius:6px;border:1px solid #e5e7eb;">
+          </div>
+          <button type="button" class="captcha_button"
+            onclick="document.getElementById('captchaImg').src='{% url 'captcha_image' %}?t=' + Date.now();">
+            Yenilə
+          </button>
+        </div>
+
+        <div class="form__input__container">
+          <p class="form__input__desc">CAPTCHA:</p>
+
+          <input placeholder="Captcha burada yazın zəhmət olmasa" type="text" name="captcha" id="captchaInput" required inputmode="numeric"
+            pattern="^\d{5}$" maxlength="5">
+
+        </div>
+        {% endif %}
+
+
 
         <div class="form__input__button">
           <button type="submit">Daxil olmaq</button>
         </div>
-
         {% if messages %}
-          {% for m in messages %}
-            <div class="msg">{{ m }}</div>
-          {% endfor %}
+        {% for m in messages %}
+        <div class="msg">{{ m }}</div>
+        {% endfor %}
         {% endif %}
-
         <div id="clientErrors" class="msg" aria-live="polite"></div>
+
       </form>
     </div>
-
     <div class="login__logo">
       <a href="https://a-group.az/">
         <img src="https://a-group.az/cabinet/style/assets/company_logo.svg" alt="A-Group">
       </a>
     </div>
-
     <div class="login__container-image">
       <img src="https://a-group.az/storage/uploaded_files/WZ0D/login.jpg" alt="">
     </div>
   </div>
-
   <script>
     (function () {
       const form = document.getElementById('loginForm');
@@ -113,5 +132,33 @@
       });
     })();
   </script>
+
+  <script>
+    // Если на странице уже есть серверные сообщения (Django messages),
+    // скопируем их текст в #clientErrors, чтобы не дублировать визуально.
+    (function () {
+      var serverMsgs = document.querySelectorAll('.msg');
+      var clientBox = document.getElementById('clientErrors');
+      if (serverMsgs.length && clientBox) {
+        // Берём последний (актуальный) месседж
+        var last = serverMsgs[serverMsgs.length - 1].textContent.trim();
+        if (last) clientBox.textContent = last;
+      }
+    })();
+
+    const captchaInput = document.getElementById('captchaInput');
+    if (captchaInput) {
+      const v = (captchaInput.value || '').trim();
+      if (!/^\d{5}$/.test(v)) {
+        setError(captchaInput, 'CAPTCHA 5 rəqəmdən ibarət olmalıdır.');
+        ok = false;
+      } else {
+        clearError(captchaInput);
+      }
+    }
+
+  </script>
+
 </body>
+
 </html>

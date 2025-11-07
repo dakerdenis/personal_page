@@ -27,5 +27,9 @@ urlpatterns = [
     path('api/doctor-career/<doctor_id>', views.api_doctor_career, name='api_doctor_career'),
     path('api/medical-complaints', views.api_medical_complaints, name='api_medical_complaints'),
     path('api/non-medical-complaints', views.api_non_medical_complaints, name='api_non_medical_complaints'),
+    path('captcha.png', views.captcha_image, name='captcha_image'),
+    path('api/active-med-policies', views.api_active_med_policies, name='api_active_med_policies'),
+    path('api/register-doctor', views.api_register_doctor, name='api_register_doctor'),
+
     
 ]

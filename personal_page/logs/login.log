@@ -202,3 +202,72 @@ requests.exceptions.SSLError: HTTPSConnectionPool(host='insure.a-group.az', port
 [2025-11-06 16:26:11,164] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
 [2025-11-06 16:26:13,913] INFO cabinet.auth: OTP request to 994507506901
 [2025-11-06 16:26:14,492] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8685', 'error': None}
+[2025-11-07 15:21:24,283] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506902
+[2025-11-07 15:21:25,341] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 15:21:33,129] INFO cabinet.auth: Login request: pin=A222221, policy=MIP2500318, phone=994507506901
+[2025-11-07 15:21:33,677] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'repeated_phone_number'}
+[2025-11-07 15:21:43,303] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500317, phone=994507506901
+[2025-11-07 15:21:43,974] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'user_not_found'}
+[2025-11-07 15:41:45,353] INFO cabinet.auth: Login request: pin=A222222, policy=MIP250031, phone=994507506901
+[2025-11-07 15:41:46,195] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'user_not_found'}
+[2025-11-07 15:41:53,540] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500345, phone=994507506901
+[2025-11-07 15:41:54,112] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'user_not_found'}
+[2025-11-07 15:41:59,970] INFO cabinet.auth: Login request: pin=A222221, policy=MIP2500318, phone=994507506901
+[2025-11-07 15:42:00,514] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'repeated_phone_number'}
+[2025-11-07 15:42:58,898] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 15:43:00,081] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 15:43:00,833] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4857', 'error': None}
+[2025-11-07 16:26:20,891] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506902
+[2025-11-07 16:26:21,505] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:26:26,942] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506905
+[2025-11-07 16:26:27,495] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:26:31,359] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506907
+[2025-11-07 16:26:31,912] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:29:36,828] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:29:37,473] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:29:37,986] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4991', 'error': None}
+[2025-11-07 16:33:42,247] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506902
+[2025-11-07 16:33:42,810] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:33:46,471] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506903
+[2025-11-07 16:33:47,023] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:33:51,950] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506904
+[2025-11-07 16:33:52,517] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 16:48:12,568] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:48:13,782] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:48:14,324] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '6803', 'error': None}
+[2025-11-07 16:48:56,131] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:48:56,724] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:48:57,222] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '2657', 'error': None}
+[2025-11-07 16:48:59,495] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:49:00,092] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:49:00,597] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '7555', 'error': None}
+[2025-11-07 16:49:05,075] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:49:05,658] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:49:06,142] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '5122', 'error': None}
+[2025-11-07 16:49:13,446] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:49:14,134] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:49:14,653] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8901', 'error': None}
+[2025-11-07 16:49:38,668] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:49:39,536] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:49:40,097] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '5754', 'error': None}
+[2025-11-07 16:59:53,798] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 16:59:54,425] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 16:59:54,935] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8925', 'error': None}
+[2025-11-07 17:08:26,143] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 17:08:26,769] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 17:08:27,331] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '9187', 'error': None}
+[2025-11-07 17:08:50,890] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 17:08:51,469] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 17:08:51,956] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8454', 'error': None}
+[2025-11-07 17:10:24,339] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 17:10:24,927] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 17:10:25,436] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4599', 'error': None}
+[2025-11-07 17:10:51,070] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506902
+[2025-11-07 17:10:51,625] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 17:10:55,601] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506903
+[2025-11-07 17:10:56,157] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 17:11:00,381] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506904
+[2025-11-07 17:11:00,959] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-07 17:11:10,166] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-07 17:11:10,745] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-07 17:11:11,255] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '1965', 'error': None}

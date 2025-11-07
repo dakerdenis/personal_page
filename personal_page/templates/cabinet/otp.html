@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,17 @@
 
   <link rel="stylesheet" href="{% static 'cabinet/css/app.css' %}">
   <link rel="stylesheet" href="{% static 'cabinet/css/login.css' %}">
-  <style>.msg{color:#b91c1c;margin-top:8px;font-size:14px}.is-invalid{border-color:#b91c1c!important}</style>
+  <style>
+    .msg {
+      color: #b91c1c;
+      margin-top: 8px;
+      font-size: 14px
+    }
+
+    .is-invalid {
+      border-color: #b91c1c !important
+    }
+  </style>
 </head>
 
 <body>
@@ -19,13 +30,17 @@
 
         <div class="form__desc form__desc-otp">
           <p>OTP Verification</p>
-          <span>OTP göndərildi: {{ phone }}. <br> Zəhmət olmasa {{ remaining }} saniyə ərzində kodu daxil edin.</span>
+          <span>
+            OTP göndərildi: {{ phone }}.<br>
+            Zəhmət olmasa <b id="remainSec">{{ remaining }}</b> saniyə ərzində kodu daxil edin.
+          </span>
         </div>
+        <input type="hidden" id="remaining_server" value="{{ remaining|default:0 }}">
 
         <div class="form__input__container">
           <p class="form__input__desc">OTP Kodu:</p>
-          <input type="text" name="otp_code" id="otp_code" placeholder="Enter OTP |"
-                 required inputmode="numeric" maxlength="6" pattern="^\d{4,6}$" autofocus>
+          <input type="text" name="otp_code" id="otp_code" placeholder="Enter OTP |" required inputmode="numeric"
+            maxlength="6" pattern="^\d{4,6}$" autofocus>
         </div>
 
         <div class="form__input__button">
@@ -33,14 +48,13 @@
         </div>
 
         {% if messages %}
-          {% for m in messages %}
-            <div class="msg">{{ m }}</div>
-          {% endfor %}
+        {% for m in messages %}
+        <div class="msg">{{ m }}</div>
+        {% endfor %}
         {% endif %}
         <div id="clientErrors" class="msg" aria-live="polite"></div>
 
-        <!-- серверный таймер -->
-        <input type="hidden" id="remaining_server" value="{{ remaining|default:0 }}">
+      
       </form>
     </div>
 
@@ -57,34 +71,39 @@
     (function () {
       const form = document.getElementById('otpForm');
       const otp = document.getElementById('otp_code');
-      const clientErrors = document.getElementById('clientErrors');
+      const leftBox = document.getElementById('remainSec');
 
-      // allow only digits, max 6
+      // нормализация ввода
       otp.addEventListener('input', () => {
         otp.value = otp.value.replace(/\D+/g, '').slice(0, 6);
-        otp.classList.remove('is-invalid');
-        if (!document.querySelector('.is-invalid')) clientErrors.textContent = '';
       });
 
       form.addEventListener('submit', (e) => {
         const v = otp.value.trim();
         if (!/^\d{4,6}$/.test(v)) {
           e.preventDefault();
-          otp.classList.add('is-invalid');
-          clientErrors.textContent = 'OTP 4–6 rəqəmdən ibarət olmalıdır.';
+          alert('OTP 4–6 rəqəmdən ibarət olmalıdır.');
         }
       });
 
       // countdown + redirect
-      var left = parseInt(document.getElementById('remaining_server').value || '0', 10);
-      var tick = setInterval(function () {
-        left--;
+      let left = parseInt(document.getElementById('remaining_server').value || '0', 10);
+      leftBox.textContent = left;
+
+      const tick = setInterval(() => {
+        left -= 1;
         if (left <= 0) {
           clearInterval(tick);
+          leftBox.textContent = 0;
+          // Возврат на login после истечения TTL
           window.location.href = "/login";
+          return;
         }
+        leftBox.textContent = left;
       }, 1000);
     })();
   </script>
+
 </body>
+
 </html>

@@ -98,7 +98,17 @@
   font-weight: 600;
   font-size: 20px;
 }
-
+.form__input__container-flex{
+align-items: center;
+}
+.captcha_button{
+  background-color: #be0a04;
+  font-size: 16px;
+  color: #fff;
+  padding: 5px 15px;
+  margin-left: 10px;
+  border-radius: 5px;
+}
 .form__input__desc {}
 
 .form__input__button {
