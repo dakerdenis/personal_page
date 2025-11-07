@@ -1,7 +1,86 @@
 {% extends "cabinet/base.html" %}
-{% block title %}complaints_not_medical — A-Group{% endblock %}
+{% block title %}Qeyri-tibbi müraciətlər — A-Group{% endblock %}
+
+{% block head_extra %}
+<style>
+  .list{list-style:none;margin:0;padding:0}
+  .item{background:#fff;border-radius:12px;padding:16px;box-shadow:0 6px 24px rgba(0,0,0,.06);margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .left p{margin:2px 0}
+  .muted{color:#6b7280}
+  .err{color:#b91c1c;margin:8px 0}
+  .btn{padding:8px 12px;border-radius:8px;background:#111827;color:#fff;text-decoration:none}
+</style>
+{% endblock %}
+
 {% block content %}
-  <section id="complaints_not_medical">
-    <!-- kontent "Şəhadətnamələr" -->
-  </section>
+<section id="complaints_not_medical">
+  <h3 style="margin:0 0 10px">Qeyri-tibbi müraciətlər</h3>
+  <div id="err" class="err" style="display:none"></div>
+  <ul id="list" class="list"></ul>
+</section>
+{% endblock %}
+
+{% block body_scripts %}
+<script>
+(function(){
+  const elErr = document.getElementById('err');
+  const elList = document.getElementById('list');
+
+  const INSURANCE_TITLES = {
+    AATPL:'Avtomobilin İcbari Sığortası', AS:'Avtomobilin Kasko Sığortası', VMI:'Avtomobilin Kasko Sığortası',
+    'AS-A47-GD':'Avtomobilin Kasko Sığortası','AS-FQ':'Avtomobilin Kasko Sığortası','AS-F':'Avtomobilin Kasko Sığortası','AS-H':'Avtomobilin Kasko Sığortası','REVAS':'Avtomobilin Kasko Sığortası',
+    EE:'Elektron cihazların sığortası', DETPL:'Əmlak İstismarın İcbari Sığortası', DE:'Əmlakın İcbari Sığortası',
+    VHI:'Əmlakın könüllü sığortası','VPI-FL':'Əmlakın könüllü sığortası','VPI-F':'Əmlakın könüllü sığortası','VPI-H':'Əmlakın könüllü sığortası',VPI:'Əmlakın könüllü sığortası','VPI-HN':'Əmlakın könüllü sığortası','VPI-FN':'Əmlakın könüllü sığortası',REVPI:'Əmlakın könüllü sığortası',
+    CPA:'Fərdi qəza sığortası', PA:'Fərdi qəza sığortası', CAR:'İnşaat risklərin sığortası',
+    EL:'İşəgötürənin məsuliyyətinin sığortası', ELN:'İşəgötürənin məsuliyyətinin sığortası',
+    TPL:'Məsuliyyət sığortası', TPLN:'Məsuliyyət sığortası',
+    CMMI:'Peşə Məsuliyyətinin sığortası', PI:'Peşə Məsuliyyətinin sığortası', CDOL:'Peşə Məsuliyyətinin sığortası',
+    CPM:'Podratçının maşın və avadanlığın sığortası',
+    TI:'Səyahət sığortası',
+    'VPI-R':'Təkərlərin sığortası',
+    LI:'Tibbi Sığorta', LE:'Tibbi Sığorta','ONK-A47':'Tibbi Sığorta', ONK:'Tibbi Sığorta', TTU:'Tibbi Sığorta','LE-D':'Tibbi Sığorta',
+    YK:'Yaşıl Kart','YS-OC':'Yük sığortası', YS:'Yük sığortası', YSN:'Yük sığortası'
+  };
+
+  function titleByCode(code){ return INSURANCE_TITLES[code] || code || '—'; }
+  function dOnly(s){ return (s||'').split('T')[0] || s || ''; }
+
+  function row(c){
+    const code = c.INSURANCE_CODE || '';
+    const title = titleByCode(code);
+    const policy = c.POLICY_NUMBER || '';
+    const dt = dOnly(c.EVENT_OCCURRENCE_DATE);
+    const status = c.STATUS_NAME || '';
+    const href = policy ? `/policies/${encodeURIComponent(policy)}/` : '#';
+    return `
+      <li class="item">
+        <div class="left">
+          <p><strong>${title}</strong></p>
+          <p class="muted">Şəhadətnamə: <a href="${href}">${policy || '—'}</a></p>
+          <p class="muted">Hadisə tarixi: ${dt || '—'}</p>
+          <p class="muted">Status: ${status || '—'}</p>
+        </div>
+        ${policy ? `<a class="btn" href="${href}">Polisə keçid</a>` : ``}
+      </li>`;
+  }
+
+  fetch('{% url "api_non_medical_complaints" %}')
+    .then(r => r.json())
+    .then(json => {
+      if(!json.ok) throw new Error(json.error || 'Xəta');
+      const arr = Array.isArray(json.complaints) ? json.complaints : [];
+      if(!arr.length){
+        elErr.style.display='block';
+        elErr.textContent = 'Məlumat tapılmadı.';
+        return;
+      }
+      elErr.style.display='none';
+      elList.innerHTML = arr.map(row).join('');
+    })
+    .catch(e => {
+      elErr.style.display='block';
+      elErr.textContent = 'Məlumat yüklənmədi: ' + (e.message||'');
+    });
+})();
+</script>
 {% endblock %}

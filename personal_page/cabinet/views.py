@@ -3,8 +3,12 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.http import HttpRequest
+
+# твоё уже есть:
 from .services import external_login
 from .otp_service import create_otp_and_send_sms
+from .complaint_service import get_medical_claim_informations  # если используешь
+from .complaint_not_service import get_non_medical_complaints
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
@@ -58,7 +62,7 @@ def index(request: HttpRequest):
 def login_view(request: HttpRequest):
     # Если уже вошёл — на главную
     if request.session.get('loggedin'):
-        return redirect('home')
+        return redirect('cabinet_welcome')
 
     # Шаг 2: если есть незавершённый OTP — показываем форму OTP и валидируем POST
     otp_pending = request.session.get('otp_pending', False)
@@ -90,7 +94,7 @@ def login_view(request: HttpRequest):
                 # очищаем OTP-промежуточные поля
                 for k in ['otp_code', 'otp_pending', 'otp_attempts', 'otp_expires_at']:
                     request.session.pop(k, None)
-                return redirect('home')
+                return redirect('cabinet_welcome')
             else:
                 attempts += 1
                 request.session['otp_attempts'] = attempts
@@ -227,6 +231,7 @@ def api_policy_info(request: HttpRequest):
     return JsonResponse(result, status=200 if result.get("ok") else 502)
 
 
+
 def policy_detail(request: HttpRequest, policy_number: str):
     if not request.session.get('loggedin'):
         return redirect('login')
@@ -237,34 +242,47 @@ def policy_detail(request: HttpRequest, policy_number: str):
         return redirect('cabinet_policies')
 
     d = r.get("data") or {}
+    code = (d.get("INSURANCE_CODE") or "").strip()
 
-    # Надёжные извлечения с фолбэками
-    code = (d.get("INSURANCE_CODE")
-            or d.get("INSURANCE_TYPE_CODE")
-            or d.get("INS_CODE")
-            or "").strip()
+    # ← ДОБАВЛЕНО: если код/статус не пришли из detail-метода — добираем из общего списка
+    if not code or not d.get("STATUS"):
+        pin = request.session.get('pinCode', '')
+        if pin:
+            lst = get_customer_policies(pin)
+            if lst.get("ok"):
+                for p in lst.get("policies", []):
+                    if (p.get("POLICY_NUMBER") or "").strip() == policy_number:
+                        code = (p.get("INSURANCE_CODE") or code or "").strip()
+                        if not d.get("STATUS"):
+                            d["STATUS"] = (p.get("STATUS") or "").strip()
+                        break
 
-    status_code = (d.get("STATUS")
-                   or d.get("POLICY_STATUS")
-                   or d.get("STATUS_CODE")
-                   or "").strip()
+    # заголовок «Нöv» и статус
+    policy_title = INSURANCE_TITLES.get(code, (code or "")) or ""
+    status_title = STATUS_TITLES.get((d.get("STATUS") or "").strip(), d.get("STATUS") or "")
 
-    # Номер полиса из ответа или из URL (как резерв)
-    number = (d.get("POLICY_NUMBER") or policy_number).strip()
+    # ← ДОБАВЛЕНО: эвристики на случай, если кода всё ещё нет
+    inferred_car = any(d.get(k) for k in ("BRAND_NAME","MODEL_NAME","PLATE_NUMBER_FULL"))
+    inferred_med = any(d.get(k) for k in ("INSURER_CUSTOMER_NAME","INSURED_CUSTOMER_NAME","PROGRAM_NAME"))
+
+    is_car = (code in CAR_CODES) or inferred_car
+    is_medical = (code in MEDICAL_CODES) or (not is_car and inferred_med)
+
+    # Фолбэк названия, если кода так и нет
+    if not policy_title:
+        policy_title = "Avtomobil sığortası" if is_car else ("Tibbi Sığorta" if is_medical else "—")
 
     return render(request, 'cabinet/policy_detail.html', {
         "name": request.session.get('name', ''),
         "surname": request.session.get('surname', ''),
         "active": "policies",
         "policy": d,
-        "policy_number": number,
-        "policy_title": INSURANCE_TITLES.get(code, code or "—"),
-        "status_title": STATUS_TITLES.get(status_code, status_code or "—"),
-        "is_medical": code in MEDICAL_CODES,
-        "is_car": code in CAR_CODES,
+        "policy_number": policy_number,
+        "policy_title": policy_title,
+        "status_title": status_title,
+        "is_medical": is_medical,
+        "is_car": is_car,
     })
-
-
 
 
 def doctors(request: HttpRequest):
@@ -326,12 +344,48 @@ def api_doctor_career(request: HttpRequest, doctor_id: str):
 
 
 def complaints(request: HttpRequest):
-    if not _guard(request): return redirect('login')
-    return render(request, 'cabinet/complaints.html', _ctx(request, 'complaints'))
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    return render(request, 'cabinet/complaints.html', {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "complaints",
+    })
+
+@require_GET
+def api_medical_complaints(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"ok": False, "error": "unauthorized"}, status=401)
+    pin = request.session.get('pinCode', '')
+    if not pin:
+        return JsonResponse({"ok": False, "error": "no_pin_in_session"}, status=400)
+    result = get_medical_claim_informations(pin)
+    return JsonResponse(result, status=200 if result.get("ok") else 502)
+
+
 
 def complaints_not_medical(request: HttpRequest):
-    if not _guard(request): return redirect('login')
-    return render(request, 'cabinet/complaints_not_medical.html', _ctx(request, 'complaints_not_medical'))
+    # простая защита — пускаем только после логина
+    if not request.session.get('loggedin'):
+        return redirect('login')
+    # активная вкладка — чтобы меню подсветилось как в других страницах
+    ctx = {
+        "name": request.session.get('name', ''),
+        "surname": request.session.get('surname', ''),
+        "active": "complaints_not_medical",
+    }
+    return render(request, 'cabinet/complaints_not_medical.html', ctx)
+
+@require_GET
+def api_non_medical_complaints(request: HttpRequest):
+    if not request.session.get('loggedin'):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+    pin = request.session.get('pinCode', '')
+    if not pin:
+        return JsonResponse({"error": "no_pin_in_session"}, status=400)
+    r = get_non_medical_complaints(pin)
+    return JsonResponse(r, status=200 if r.get("ok") else 502)
+
 
 def refund(request: HttpRequest):
     if not _guard(request): return redirect('login')

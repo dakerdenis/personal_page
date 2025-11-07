@@ -1,60 +1,69 @@
 {% extends "cabinet/base.html" %}
-{% block title %}Şəhadətnamə — {{ policy.POLICY_NUMBER }}{% endblock %}
+{% block title %}Şəhadətnamə — {{ policy_number }}{% endblock %}
 
 {% block head_extra %}
 <style>
-.row{
-    flex-direction: column;
-    align-items: initial;
-}
-.kv{
-    font-size: 16px;
-}
+  .row{display:grid;gap:8px}
+  .muted{color:#6b7280}
+  .kv p{margin:2px 0}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="hdr">
-    <a class="back" href="{% url 'cabinet_policies' %}">⬅ Geri</a>
+  <a class="back" href="{% url 'cabinet_policies' %}">⬅ Geri</a>
 </div>
 
 <div class="card">
-    <div class="row">
-        <div class="muted">{{ policy_title }}</div>
+  <div class="row">
+    <div class="muted">{{ policy_title }}</div>
 
-        <div class="kv">
-            <p><strong>Şəhadətnamə:</strong> {{ policy_number }}</p>
-            <p><strong>Valyuta:</strong> {{ policy.CURRENCY_CODE }}</p>
-            <p><strong>Buraxılış tarixi:</strong> {{ policy.POLICY_SALE_DATE|default:""|slice:":10" }}</p>
-            <p><strong>Başlama tarixi:</strong> {{ policy.INSURANCE_START_DATE|default:""|slice:":10" }}</p>
-          <!--p><strong>Bitmə tarixi:</strong> {{ policy.INSURANCE_END_DATE|default:""|slice:":10" }}</p> -->
-        </div>
+    <div class="kv">
+      <p><strong>Növ:</strong> {{ policy_title }}</p>
+      <p><strong>Status:</strong> {{ status_title }}</p>
+      <p><strong>Şəhadətnamə:</strong> {{ policy_number }}</p>
 
-        {% if is_medical %}
-        <hr>
-        <div class="kv">
-            <p><strong>Sığortalı:</strong> {{ policy.INSURER_CUSTOMER_NAME }}</p>
-            <p><strong>Sığorta olunan:</strong> {{ policy.INSURED_CUSTOMER_NAME }}</p>
-            <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
-        </div>
-        {% elif is_car %}
-        <hr>
-        <div class="kv">
-            <p><strong>Marka:</strong> {{ policy.BRAND_NAME }}</p>
-            <p><strong>Model:</strong> {{ policy.MODEL_NAME }}</p>
-            <p><strong>Qeydiyyat nişanı:</strong> {{ policy.PLATE_NUMBER_FULL }}</p>
-            <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
-            <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE
-                }}</p>
-        </div>
-        {% else %}
-        <hr>
-        <div class="kv">
-            <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
-            <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
-        </div>
-        {% endif %}
+      <p><strong>Valyuta:</strong> {{ policy.CURRENCY_CODE }}</p>
+      <p><strong>Buraxılış tarixi:</strong> {{ policy.POLICY_SALE_DATE|default:""|slice:":10" }}</p>
+      <p><strong>Başlama tarixi:</strong> {{ policy.INSURANCE_START_DATE|default:""|slice:":10" }}</p>
+      <p><strong>Bitmə tarixi:</strong> {{ policy.INSURANCE_END_DATE|default:""|slice:":10" }}</p>
     </div>
 
+    {% if is_medical %}
+      <hr>
+      <div class="kv">
+        <p><strong>Sığortalı:</strong> {{ policy.INSURER_CUSTOMER_NAME }}</p>
+        <p><strong>Sığorta olunan:</strong> {{ policy.INSURED_CUSTOMER_NAME }}</p>
+        <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|default_if_none:""|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
+      </div>
+    {% elif is_car %}
+      <hr>
+      <div class="kv">
+        <p><strong>Marka:</strong> {{ policy.BRAND_NAME }}</p>
+        <p><strong>Model:</strong> {{ policy.MODEL_NAME }}</p>
+        <p><strong>Qeydiyyat nişanı:</strong> {{ policy.PLATE_NUMBER_FULL }}</p>
+        <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|default_if_none:""|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
+        <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|default_if_none:""|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
+      </div>
+    {% else %}
+      <hr>
+      <div class="kv">
+        <p><strong>Sığorta məbləği:</strong> {{ policy.PRICE|default_if_none:""|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
+        <p><strong>Sığorta haqqı:</strong> {{ policy.TOTAL_INSURANCE_PRICE|default_if_none:""|floatformat:2 }} {{ policy.CURRENCY_CODE }}</p>
+      </div>
+    {% endif %}
+
+    {% if policy.COLLATERAL_NAMES %}
+      <hr>
+      <div>
+        <div class="muted">Əhatə olunan risklər:</div>
+        <div class="chips">
+          {% for c in policy.COLLATERAL_NAMES %}
+            <span class="chip">{{ c.COLLATERAL_NAME }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

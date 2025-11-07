@@ -179,3 +179,26 @@ requests.exceptions.SSLError: HTTPSConnectionPool(host='insure.a-group.az', port
 [2025-10-24 12:32:58,289] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
 [2025-10-24 12:32:58,291] INFO cabinet.auth: OTP request to 994507506901
 [2025-10-24 12:32:58,499] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '2507', 'error': None}
+[2025-11-06 15:36:57,131] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-11-06 15:36:57,838] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-11-06 15:36:57,839] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 15:36:58,506] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '5654', 'error': None}
+[2025-11-06 15:37:43,219] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-11-06 15:37:43,795] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-11-06 15:37:43,796] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 15:37:44,330] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '1734', 'error': None}
+[2025-11-06 15:39:57,541] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-11-06 15:39:58,126] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-11-06 15:39:58,129] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 15:39:58,990] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '9348', 'error': None}
+[2025-11-06 15:41:02,942] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-11-06 15:41:03,647] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-11-06 15:41:03,649] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 15:41:04,176] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '5342', 'error': None}
+[2025-11-06 15:54:52,778] INFO cabinet.auth: Login request: pin=27DRGHZ, policy=TLI2501123, phone=994507506901
+[2025-11-06 15:54:53,571] INFO cabinet.auth: SOAP12 parsed: {'ok': True, 'name': 'DENIS', 'surname': 'AKERSHTEYN', 'error': None}
+[2025-11-06 15:54:53,572] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 15:54:54,112] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4467', 'error': None}
+[2025-11-06 16:26:11,164] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-06 16:26:13,913] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-06 16:26:14,492] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '8685', 'error': None}

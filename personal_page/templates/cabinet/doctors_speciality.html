@@ -10,7 +10,7 @@
 {% block content %}
 <div class="hdr">
   <a class="back" href="{% url 'cabinet_doctors' %}">⬅ Geri</a>
-  <h2 style="margin:0">İxtisas: {{ speciality_id }}</h2>
+
 </div>
 
 <div class="toolbar">
@@ -54,8 +54,11 @@
   <a class="card" href="/doctors/${encodeURIComponent(specialityId)}/${encodeURIComponent(id)}/">
     <img alt="" src="${imgSrc(d.FILE_CONTENT)}">
     <div>
-      <p class="name">${name}</p>
-      <p class="muted">İş yeri: ${place || '—'}</p>
+      <p class="name doctors_name_stalker">${name}</p>
+      <p class=" doctors_workplace">
+        <span>İş yeri: </span>
+        <span>${place || '—'}</span>        
+      </p>
       <p class="muted">ID: ${id}</p>
     </div>
   </a>

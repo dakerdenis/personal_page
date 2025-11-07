@@ -114,7 +114,7 @@ STATICFILES_DIRS = [ BASE_DIR / 'static' ]  # опционально, для о�
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EXTERNAL_AUTH = {
-    'URL': 'https://insure.a-group.az/insureazSvc/AQroupMobileIntegrationSvc.asmx',
+    'URL': 'https://insure.a-group.az/InsureAzSvcTest/AQroupMobileIntegrationSvc.asmx',
     'USERNAME': 'AQWeb',  # системный логин
     'PASSWORD': 'uT&aXtx_ID_!9))',  # системный пароль (как у тебя в примере)
     'TIMEOUT': 15,  # секунд

@@ -25,4 +25,7 @@ urlpatterns = [
     path('api/specialities', views.api_specialities, name='api_specialities'),
     path('api/doctors/<speciality_id>', views.api_doctors_by_speciality, name='api_doctors_by_speciality'),
     path('api/doctor-career/<doctor_id>', views.api_doctor_career, name='api_doctor_career'),
+    path('api/medical-complaints', views.api_medical_complaints, name='api_medical_complaints'),
+    path('api/non-medical-complaints', views.api_non_medical_complaints, name='api_non_medical_complaints'),
+    
 ]
