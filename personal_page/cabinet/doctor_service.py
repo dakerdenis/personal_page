@@ -4,6 +4,8 @@ from xml.sax.saxutils import escape as xml_escape
 import requests
 from django.conf import settings
 import logging
+from html import unescape as html_unescape
+
 
 logger = logging.getLogger('cabinet.auth')
 
@@ -78,20 +80,24 @@ def _post_soap(url: str, payload: str, action: str, timeout: int, verify_ssl: bo
 
 
 
-
 def _extract_inner_string(tag: str, body: str) -> str | None:
+
     m = re.search(fr'<{tag}[^>]*>(.*?)</{tag}>', body, flags=re.S | re.I)
     if m:
-        return (m.group(1) or '').strip()
+        inner = (m.group(1) or '').strip()
+        return html_unescape(inner) or None
+
     m2 = re.search(r'<string\b[^>]*>(.*?)</string>', body, flags=re.S | re.I)
     if m2:
-        return (m2.group(1) or '').strip()
+        inner = (m2.group(1) or '').strip()
+        return html_unescape(inner) or None
+
     try:
         root = ET.fromstring(body)
-        return (root.text or '').strip() or None
+        t = (root.text or '').strip()
+        return html_unescape(t) or None
     except ET.ParseError:
         return None
-
 
 
 
