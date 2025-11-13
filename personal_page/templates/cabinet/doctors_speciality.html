@@ -52,14 +52,16 @@
 
       return `
   <a class="card" href="/doctors/${encodeURIComponent(specialityId)}/${encodeURIComponent(id)}/">
-    <img alt="" src="${imgSrc(d.FILE_CONTENT)}">
+    <div class="card_image">
+      <img alt="" src="${imgSrc(d.FILE_CONTENT)}">
+    </div>
+
     <div>
       <p class="name doctors_name_stalker">${name}</p>
-      <p class=" doctors_workplace">
-        <span>İş yeri: </span>
-        <span>${place || '—'}</span>        
+      <p class="doctors_workplace">
+        <span class="doctors_workplace1">İş yeri: </span>
+        <span class="doctors_workplace2">${place || '—'}</span>        
       </p>
-      <p class="muted">ID: ${id}</p>
     </div>
   </a>
 `;

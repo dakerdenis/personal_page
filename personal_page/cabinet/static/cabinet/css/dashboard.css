@@ -261,14 +261,22 @@
     flex-direction: column;
 }
 
-.card img {
+.card_image {
     width: 145px;
     height: 163px;
     border-radius: 8px;
     object-fit: cover;
-    background: #f3f4f6
+    background: #f3f4f6;
+    overflow: hidden;
 }
-
+.card_image img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.row-top-name{
+    width: 172px;
+}
 .name {
     font-weight: 700;
     margin: 0
@@ -286,6 +294,16 @@
     margin-bottom: 10px;
     color: #6b7280;
 }
+
+
+.doctors_workplace1{
+    width: 47px;
+}
+
+.doctors_workplace2{
+    width: calc(100% - 66px);
+}
+
 .muted {
     color: #6b7280;
     margin: 2px 0 0
@@ -482,4 +500,7 @@ display: flex;
     to {
         transform: rotate(360deg)
     }
+}
+.form__input__container-captcha{
+    
 }

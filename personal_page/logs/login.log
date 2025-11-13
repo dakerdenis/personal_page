@@ -271,3 +271,15 @@ requests.exceptions.SSLError: HTTPSConnectionPool(host='insure.a-group.az', port
 [2025-11-07 17:11:10,166] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
 [2025-11-07 17:11:10,745] INFO cabinet.auth: OTP request to 994507506901
 [2025-11-07 17:11:11,255] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '1965', 'error': None}
+[2025-11-13 09:39:40,578] INFO cabinet.auth: Login request: pin=A222221, policy=MIP2500318, phone=994507506901
+[2025-11-13 09:39:40,951] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'repeated_phone_number'}
+[2025-11-13 09:40:08,358] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506905
+[2025-11-13 09:40:08,671] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'incorrect_phone_number'}
+[2025-11-13 09:40:34,365] INFO cabinet.auth: Login request: pin=A415141, policy=4111451, phone=994507506901
+[2025-11-13 09:40:34,665] INFO cabinet.auth: SOAP12 parsed: {'ok': False, 'name': None, 'surname': None, 'error': 'repeated_phone_number'}
+[2025-11-13 09:40:48,538] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-13 09:40:48,917] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-13 09:40:49,196] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '4570', 'error': None}
+[2025-11-13 09:41:12,628] INFO cabinet.auth: Login request: pin=A222222, policy=MIP2500318, phone=994507506901
+[2025-11-13 09:41:12,911] INFO cabinet.auth: OTP request to 994507506901
+[2025-11-13 09:41:13,189] INFO cabinet.auth: OTP SOAP12 parsed: {'ok': True, 'code': '6438', 'error': None}

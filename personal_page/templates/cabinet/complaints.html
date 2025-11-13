@@ -3,14 +3,52 @@
 
 {% block head_extra %}
 <style>
-  .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-  .title{margin:0}
-  .grid{display:grid;gap:12px}
-  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.06)}
-  .row-top{display:flex;justify-content:space-between;align-items:center}
-  .muted{color:#6b7280}
-  .msg-error{color:#b91c1c;margin:8px 0}
-  .badge{background:#f3f4f6;border-radius:999px;padding:4px 10px;font-size:12px}
+  .hdr {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px
+  }
+
+  .title {
+    margin: 0
+  }
+
+  .grid {
+    display: grid;
+    gap: 12px
+  }
+
+  .card {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06)
+  }
+
+  .row-top {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .muted {
+    color: #6b7280
+  }
+
+  .msg-error {
+    color: #b91c1c;
+    margin: 8px 0
+  }
+
+  .badge {
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px
+  }
 </style>
 {% endblock %}
 
@@ -28,42 +66,42 @@
 
 {% block body_scripts %}
 <script>
-(function(){
-  const err = document.getElementById('err');
-  const empty = document.getElementById('empty');
-  const list = document.getElementById('list');
+  (function () {
+    const err = document.getElementById('err');
+    const empty = document.getElementById('empty');
+    const list = document.getElementById('list');
 
-  function itemRow(it){
-    const date = (it.EVENT_OCCURRENCE_DATE || '').split('T')[0] || (it.EVENT_OCCURRENCE_DATE || '');
-    const clinic = it.CLINIC_NAME || '—';
-    const pin = it.PIN_CODE || '—';
-    return `
+    function itemRow(it) {
+      const date = (it.EVENT_OCCURRENCE_DATE || '').split('T')[0] || (it.EVENT_OCCURRENCE_DATE || '');
+      const clinic = it.CLINIC_NAME || '—';
+      const pin = it.PIN_CODE || '—';
+      return `
       <div class="card">
         <div class="row-top">
-          <div style="font-weight:600">${clinic}</div>
-          <span class="badge">PIN: ${pin}</span>
+          <div class="row-top-name" style="font-weight:600">${clinic}</div>
+          <span class="badge-row">PIN: ${pin}</span>
         </div>
         <div class="muted">Hadisə tarixi: ${date || '—'}</div>
       </div>`;
-  }
+    }
 
-  fetch("{% url 'api_medical_complaints' %}")
-    .then(r => r.json())
-    .then(json => {
-      if(!json.ok) throw new Error(json.error || 'Xəta');
-      const arr = Array.isArray(json.complaints) ? json.complaints : [];
-      if(!arr.length){
-        empty.style.display = 'block';
-        list.innerHTML = '';
-        return;
-      }
-      empty.style.display = 'none';
-      list.innerHTML = arr.map(itemRow).join('');
-    })
-    .catch(e => {
-      err.style.display = 'block';
-      err.textContent = 'Məlumat yüklənmədi: ' + (e.message || '');
-    });
-})();
+    fetch("{% url 'api_medical_complaints' %}")
+      .then(r => r.json())
+      .then(json => {
+        if (!json.ok) throw new Error(json.error || 'Xəta');
+        const arr = Array.isArray(json.complaints) ? json.complaints : [];
+        if (!arr.length) {
+          empty.style.display = 'block';
+          list.innerHTML = '';
+          return;
+        }
+        empty.style.display = 'none';
+        list.innerHTML = arr.map(itemRow).join('');
+      })
+      .catch(e => {
+        err.style.display = 'block';
+        err.textContent = 'Məlumat yüklənmədi: ' + (e.message || '');
+      });
+  })();
 </script>
 {% endblock %}
